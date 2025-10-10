@@ -25,11 +25,29 @@ public class App
             System.out.println("Connecting to database...");
             try
             {
-                // Wait a bit for db to start
+                // Wait a bit for DB to start
                 Thread.sleep(1000);
+
+                // Temporarily suppress MySQL driver stderr messages
+                java.io.PrintStream originalErr = System.err;
+                System.setErr(new java.io.PrintStream(new java.io.OutputStream() {
+                    public void write(int b) {
+                        // ignore all error messages
+                    }
+                }));
+
                 // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true", "root", "example");
+                con = DriverManager.getConnection(
+                        "jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true",
+                        "root",
+                        "example"
+                );
+
+                // Restore normal error output
+                System.setErr(originalErr);
+
                 System.out.println("Successfully connected");
+
                 // Wait a bit
                 Thread.sleep(1000);
                 // Exit for loop
@@ -37,7 +55,9 @@ public class App
             }
             catch (SQLException sqle)
             {
-                System.out.println("Failed to connect to database attempt " + Integer.toString(i));
+                // Restore stderr in case of error
+                System.setErr(System.err);
+                System.out.println("Failed to connect to database attempt " + i);
                 System.out.println(sqle.getMessage());
             }
             catch (InterruptedException ie)

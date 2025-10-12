@@ -18,4 +18,4 @@ Damian Henry
 
 Kendail Herbert
 
-Roderick Belfon - Scrum Master
+Roderick Belfon - Scrum Master 

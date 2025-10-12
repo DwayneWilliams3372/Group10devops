@@ -18,4 +18,6 @@ Damian Henry
 
 Kendail Herbert
 
+Shonique Sweeting
+
 Roderick Belfon - Scrum Master 

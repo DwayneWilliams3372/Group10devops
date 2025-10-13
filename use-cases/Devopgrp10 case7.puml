@@ -1,0 +1,19 @@
+@startuml
+
+actor Analyst as "Data Analyst"
+
+rectangle Database
+
+rectangle "Analytics System" {
+    usecase UC1 as "View countries in specific
+    continent by population"
+
+    usecase UC2 as "Compare population
+    sizes"
+
+    Analyst - UC1
+    UC1 ..> UC2 : include
+    UC1 - Database
+}
+
+@enduml

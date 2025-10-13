@@ -1,0 +1,19 @@
+@startuml
+
+actor Researcher as "Researcher"
+
+rectangle Database
+
+rectangle "Research System" {
+    usecase UC1 as "Generate country report
+    with key details"
+
+    usecase UC2 as "Access comprehensive
+    country information"
+
+    Researcher - UC1
+    UC1 ..> UC2 : include
+    UC1 - Database
+}
+
+@enduml

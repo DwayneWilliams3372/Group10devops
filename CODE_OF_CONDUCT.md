@@ -144,4 +144,4 @@ By contributing to this project, I agree to uphold this Code of Conduct and supp
 
 ---
 
-**Remember:** We're all in this together. Let's make this project something we're proud of - not just because of the grade, but because of how we worked as a team.
+**Remember:** We're all in this together. Let's make this project something we're proud of - not just because of the grade, but because of how we worked as a Team.

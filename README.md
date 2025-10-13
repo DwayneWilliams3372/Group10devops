@@ -15,3 +15,5 @@ Dwayne Williams - Developer
 Chan Myae
 
 Damian Henry
+
+Kendail Herbert - Developer

@@ -14,7 +14,7 @@ Dwayne Williams - Developer
 
 Chan Myae - Developer
 
-Damian Henry
+Damian Henry - Product Owner
 
 Kendail Herbert - Developer 
 

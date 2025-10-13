@@ -12,7 +12,7 @@
 
 Dwayne Williams - Developer
 
-Chan Myae
+Chan Myae - Developer
 
 Damian Henry
 

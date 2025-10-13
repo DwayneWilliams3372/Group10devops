@@ -16,7 +16,7 @@ Chan Myae
 
 Damian Henry
 
-Kendail Herbert - developer 
+Kendail Herbert - Developer 
 
 Shonique Sweeting
 

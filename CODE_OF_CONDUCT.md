@@ -136,7 +136,7 @@ We hope it never comes to this because we're all here to learn and succeed toget
 By contributing to this project, I agree to uphold this Code of Conduct and support my teammates in doing the same.
 
 **Team Members:**
-- [Name] - [Date]
+- Kendail Herbert - 12/10/2025
 - [Name] - [Date]
 - [Name] - [Date]
 - [Name] - [Date]

@@ -21,3 +21,7 @@ Kendail Herbert - Developer
 Shonique Sweeting
 
 Roderick Belfon - Scrum Master 
+
+## Code of Conduct
+
+See our [Code of Conduct](CODE_OF_CONDUCT.md) for team guidelines and expectations.

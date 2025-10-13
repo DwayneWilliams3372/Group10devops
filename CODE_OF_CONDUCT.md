@@ -139,7 +139,7 @@ By contributing to this project, I agree to uphold this Code of Conduct and supp
 - Kendail Herbert - 12/10/2025
 - Chan Myae - 13/10/2025
 - Damian Henry - 13/10/2025
-- [Name] - [Date]
+- Roderick Belfon - 13/10/2025
 - [Name] - [Date]
 - [Name] - [Date]
 

@@ -12,6 +12,16 @@
 
 Dwayne Williams - Developer
 
-Chan Myae
+Chan Myae - Developer
 
-Damian Henry
+Damian Henry - Product Owner
+
+Kendail Herbert - Developer 
+
+Shonique Sweeting
+
+Roderick Belfon - Scrum Master 
+
+## Code of Conduct
+
+See our [Code of Conduct](CODE_OF_CONDUCT.md) For team guidelines and expectations.

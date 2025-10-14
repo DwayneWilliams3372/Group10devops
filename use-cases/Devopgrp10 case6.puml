@@ -1,0 +1,19 @@
+@startuml
+
+actor Researcher as "Researcher"
+
+rectangle Database
+
+rectangle "Research System" {
+    usecase UC1 as "View average
+    population density for each country"
+
+    usecase UC2 as "Analyze regional
+    density patterns"
+
+    Researcher - UC1
+    UC1 ..> UC2 : include
+    UC1 - Database
+}
+
+@enduml

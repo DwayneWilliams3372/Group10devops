@@ -1,0 +1,19 @@
+@startuml
+
+actor Analyst as "Data Analyst"
+
+rectangle Database
+
+rectangle "Analytics System" {
+    usecase UC1 as "Generate report on
+    Top 10 fastest-growing countries"
+
+    usecase UC2 as "Identify emerging
+    high-density areas"
+
+    Analyst - UC1
+    UC1 ..> UC2 : include
+    UC1 - Database
+}
+
+@enduml

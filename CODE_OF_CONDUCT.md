@@ -141,7 +141,7 @@ By contributing to this project, I agree to uphold this Code of Conduct and supp
 - Damian Henry - 13/10/2025
 - Roderick Belfon - 13/10/2025
 - Dwayne Williams - 13/10/25
-- [Name] - [Date]
+- Shonique Sweeting- 13/10/25
 
 ---
 

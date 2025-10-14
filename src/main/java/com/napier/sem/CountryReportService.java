@@ -145,6 +145,7 @@ public class CountryReportService {
         c.continent = rset.getString("Continent");
         c.region = rset.getString("Region");
         c.population = rset.getInt("Population");
+        c.capital = rset.getString("Capital");
         return c;
     }
 }

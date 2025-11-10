@@ -15,8 +15,7 @@ public class App
     /**
      * Connect to the MySQL database.
      */
-    public void connect()
-    {
+    public void connect() {
         try
         {
             // Load Database driver
@@ -56,18 +55,13 @@ public class App
     /**
      * Disconnect from the MySQL database.
      */
-    public void disconnect()
-    {
-        if (con != null)
-        {
-            try
-            {
-                // Close connection
+    public void disconnect() {
+        if (con != null) {
+            try {
                 con.close();
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error closing connection to database");
+                System.out.println("Disconnected.");
+            } catch (SQLException sqle) {
+                System.out.println("Failed to close connection.");
             }
         }
     }
@@ -80,24 +74,8 @@ public class App
         // Connect to database
         a.connect();
 
-        // Create the report service (accessing the inner class)
-        CountryReportService reportService = new CountryReportService(a.con);
-        ReportPrinter reportPrinter = new ReportPrinter();
-
-        // Example 1: All countries in the world
-        ArrayList<Country> worldCountries = reportService.getAllCountriesByPopulation();
-        System.out.println("\nAll countries in the world:");
-        reportPrinter.printCountries(worldCountries);
-
-        // Example 2: All countries in Asia
-        ArrayList<Country> asiaCountries = reportService.getCountriesByContinent("Asia");
-        System.out.println("\nCountries in Asia:");
-        reportPrinter.printCountries(asiaCountries);
-
-        // Example 3: Top 5 populated countries in the world
-        ArrayList<Country> top5 = reportService.getTopCountriesInWorld(5);
-        System.out.println("\nTop 5 populated countries in the world:");
-        reportPrinter.printCountries(top5);
+        Menu menu = new Menu(a.con);
+        menu.start();
 
         // Disconnect from database
         a.disconnect();

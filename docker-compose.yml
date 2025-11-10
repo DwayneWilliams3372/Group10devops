@@ -4,6 +4,11 @@ services:
   # Build app from Dockerfile in same folder
   app:
     build: .
+    stdin_open: true
+    tty: true
+    depends_on:
+      - db
+
 
   # Build the db as name db from the Dockerfile in the db folder
   # exposing the port if we want to run code outside a container

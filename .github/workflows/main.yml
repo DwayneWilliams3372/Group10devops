@@ -20,6 +20,6 @@ jobs:
           mvn package -DskipTests
           docker compose up -d
       - name: Wait for app to finish
-        run: docker wait group10devops-db-1
+        run: docker wait group10devops-app
       - name: View logs
         run: docker logs group10devops-db-1

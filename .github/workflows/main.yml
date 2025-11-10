@@ -19,15 +19,24 @@ jobs:
         run: |
           mvn package -DskipTests
           docker compose up -d
+      - name: Initial logs check
+        run: |
+          sleep 10 
+          docker compose logs
       - name: Wait for services to initialize
         run: |
-          timeout 60 bash -c 'until docker exec group10devops-db-1 mysqladmin ping -h localhost --silent; do sleep 5; done'
-          if docker compose logs app | grep -q "Successfully connected"; then
-            echo "App connected successfully!"
-          else
-            echo "App connection failed - check logs"
-            exit 1
-          fi
+          timeout 60 bash -c 'until docker exec group10devops-db-1 mysqladmin ping -h localhost -u root -p example --silent; do sleep 5; done'
+          sleep 10
+          for i in {1..3}; do
+            if docker compose logs app | grep -q "Successfully connected"; then
+              echo "App connected successfully!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "App connection failed after retries - check full logs"
+          docker compose logs  
+          exit 1
       - name: View logs
         run: docker compose logs --tail=200
       - name: Cleanup

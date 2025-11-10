@@ -18,6 +18,13 @@ jobs:
       - name: Package and Run docker compose
         run: |
           mvn package -DskipTests
-          docker compose up --abort-on-container-exit
-      - name: view logs
-        run: docker logs group10devops-db-1
+          
+          docker compose up -d
+         
+          sleep 30
+          
+          docker compose logs
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose down

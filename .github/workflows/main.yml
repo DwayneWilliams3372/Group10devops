@@ -21,12 +21,15 @@ jobs:
           docker compose up -d
       - name: Wait for services to initialize
         run: |
-          sleep 30
-          docker compose ps
+          timeout 60 bash -c 'until docker exec group10devops-db-1 mysqladmin ping -h localhost --silent; do sleep 5; done'
+          if docker compose logs app | grep -q "Successfully connected"; then
+            echo "App connected successfully!"
+          else
+            echo "App connection failed - check logs"
+            exit 1
+          fi
       - name: View logs
-        run: |
-          docker compose logs
+        run: docker compose logs --tail=200
       - name: Cleanup
         if: always()
-        run: |
-          docker compose down
+        run: docker compose down

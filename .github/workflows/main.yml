@@ -19,7 +19,14 @@ jobs:
         run: |
           mvn package -DskipTests
           docker compose up -d
-      - name: Wait for app to finish
-        run: docker wait group10devops-app
+      - name: Wait for services to initialize
+        run: |
+          sleep 30
+          docker compose ps
       - name: View logs
-        run: docker logs group10devops-db-1
+        run: |
+          docker compose logs
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose down

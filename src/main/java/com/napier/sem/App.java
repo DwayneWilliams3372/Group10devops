@@ -74,8 +74,18 @@ public class App
         // Connect to database
         a.connect();
 
-        Menu menu = new Menu(a.con);
-        menu.start();
+        // Check for CI environment (e.g., set NON_INTERACTIVE=true in workflow)
+        String ciMode = System.getenv("NON_INTERACTIVE");  // Or use "CI" if preferred
+        if ("true".equals(ciMode)) {
+            // In CI mode, just confirm connection and exit
+            System.out.println("Database connection test passed. Exiting.");
+            a.disconnect();
+            System.exit(0);
+        } else {
+            // Normal interactive mode: start the menu
+            Menu menu = new Menu(a.con);
+            menu.start();
+        }
 
         // Disconnect from database
         a.disconnect();

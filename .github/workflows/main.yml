@@ -20,10 +20,10 @@ jobs:
       - name: Package and Run docker compose
         run: |
           mvn package -DskipTests
-          docker compose up --wait  
+          docker compose up --abort-on-container-exit
 
       - name: Run app for connection test
-        run: docker-compose exec -e NON_INTERACTIVE=true app java -jar /tmp/semApp.jar
+        run: docker compose exec -e NON_INTERACTIVE=true app java -jar /tmp/semApp.jar
 
       - name: View logs
-        run: docker logs group10devops-db-1
+        run: docker compose logs db

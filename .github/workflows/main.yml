@@ -18,15 +18,8 @@ jobs:
       - name: Package and Run docker compose
         run: |
           mvn package -DskipTests
-          docker compose up -d
-      - name: Wait for services to initialize
-        run: |
-          sleep 30
-          docker compose ps
-      - name: View logs
-        run: |
-          docker compose logs
-      - name: Cleanup
-        if: always()
-        run: |
+          docker compose up -d db   
+          docker exec -i group10devops-app-1 java -jar /tmp/semApp.jar 
           docker compose down
+      - name: view logs
+        run: docker logs group10devops-db-1

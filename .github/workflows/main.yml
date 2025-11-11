@@ -27,11 +27,23 @@ jobs:
       - name: Start containers
         run: docker compose up -d
 
-      - name: Wait for app container to be ready
+      - name: Wait for app container to start
         run: |
           echo "Waiting for app container to start..."
-          sleep 15
-          docker ps
+          for i in {1..10}; do
+            APP_CONTAINER=$(docker ps --filter "name=_app_" --format "{{.Names}}" | head -n 1)
+            if [ -n "$APP_CONTAINER" ]; then
+              echo "✅ Found container: $APP_CONTAINER"
+              docker logs "$APP_CONTAINER"
+              exit 0
+            fi
+            echo "Still waiting ($i)..."
+            sleep 5
+          done
+          echo "❌ App container not found after waiting."
+          docker ps -a
+          exit 1
+      
 
       - name: View app logs
         run: |

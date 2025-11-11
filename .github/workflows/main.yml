@@ -1,25 +1,49 @@
-name: A workflow for my App
-on: push
+name: Build and Run App with Docker Compose
+
+on: [push]
 
 jobs:
-  Build:
-    name: Build and Start Using docker-compose
+  build:
     runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Package and Run docker compose
+
+      - name: Build JAR with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Build Docker images
+        run: docker compose build
+
+      - name: Start containers
+        run: docker compose up -d
+
+      - name: Wait for app container to be ready
         run: |
-          mvn package -DskipTests
-          docker compose up -d db   
-          docker exec -i group10devops-app-1 java -jar /tmp/semApp.jar 
-          docker compose down
-      - name: view logs
-        run: docker logs group10devops-db-1
+          echo "Waiting for app container to start..."
+          sleep 15
+          docker ps
+
+      - name: View app logs
+        run: |
+          APP_CONTAINER=$(docker ps --filter "name=_app_" --format "{{.Names}}" | head -n 1)
+          if [ -n "$APP_CONTAINER" ]; then
+            docker logs $APP_CONTAINER
+          else
+            echo "App container not found!"
+            docker compose ps
+            exit 1
+          fi
+
+      - name: Stop and remove containers
+        if: always()
+        run: docker compose down

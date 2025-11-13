@@ -22,8 +22,8 @@ public class City {
 //    All the cities in the world
     public ArrayList<City> getCities() {
         String query = "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
-        "FROM city JOIN country ON city.CountryCode = country.Code " +
-        "ORDER BY city.Population DESC ";
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "ORDER BY city.Population DESC ";
         return executeCityQuery(query);
     }
 //    All the cities in a continent.
@@ -62,10 +62,47 @@ public class City {
     }
 
 //    The top N populated cities in the world
+    public ArrayList<City> getCitiesPopulation(int n) {
+        String query =  "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "ORDER BY city.Population DESC LIMIT ? ";
+        return executeCityQuery(query, n);
+    }
 //    The top N populated cities in a continent
+    public ArrayList<City> getTopCitiesContinent(String continent, int n) {
+        String query = "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE country.Continent = ? " +
+                "ORDER BY city.Population DESC LIMIT ? ";
+        return executeCityQuery(query, continent, n);
+    }
+
 //    The top N populated cities in a region
+    public ArrayList<City> getTopCitiesRegion(String region, int n) {
+        String query = "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE country.Region = ? " +
+                "ORDER BY city.Population DESC LIMIT ? ";
+        return executeCityQuery(query, region, n);
+    }
+
 //    The top N populated cities in a country
+    public ArrayList<City> getTopCitiesCountry(String country, int n) {
+        String query = "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE country.Name = ? " +
+                "ORDER BY city.Population DESC LIMIT ? ";
+        return executeCityQuery(query, country, n);
+    }
+
 //    The top N populated cities in a district
+    public ArrayList<City> getTopCitiesDistrict(String district, int n) {
+        String query = "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE city.District = ? " +
+                "ORDER BY city.Population DESC LIMIT ? ";
+        return executeCityQuery(query, district, n);
+    }
 
     //    Query without parameters
     private ArrayList<City> executeCityQuery(String query) {
@@ -86,6 +123,41 @@ public class City {
         ArrayList<City> cities = new ArrayList<>();
         try (PreparedStatement stmt = con.prepareStatement(query);) {
             stmt.setString(1, param);
+            try (ResultSet rset = stmt.executeQuery()) {
+                while (rset.next()) {
+                    City c = extractCity(rset);
+                    cities.add(c);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+        return cities;
+    }
+
+    //  Query with one integer parameter
+    private ArrayList<City> executeCityQuery(String query, int n) {
+        ArrayList<City> cities = new ArrayList<>();
+        try (PreparedStatement stmt = con.prepareStatement(query);) {
+            stmt.setInt(1, n);
+            try (ResultSet rset = stmt.executeQuery()) {
+                while (rset.next()) {
+                    City c = extractCity(rset);
+                    cities.add(c);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+        return cities;
+    }
+
+    //  Query with two parameters
+    private ArrayList<City> executeCityQuery(String query, String param, int n) {
+        ArrayList<City> cities = new ArrayList<>();
+        try (PreparedStatement stmt = con.prepareStatement(query);) {
+            stmt.setString(1, param);
+            stmt.setInt(2, n);
             try (ResultSet rset = stmt.executeQuery()) {
                 while (rset.next()) {
                     City c = extractCity(rset);

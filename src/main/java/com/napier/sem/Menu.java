@@ -31,6 +31,11 @@ public class Menu {
             System.out.println("9. All the cities in a region");
             System.out.println("10. All the cities in a country");
             System.out.println("11. All the cities in a district");
+            System.out.println("12. Top N cities in the world");
+            System.out.println("13. Top N cities in a continent");
+            System.out.println("14. Top N cities in a region");
+            System.out.println("15. Top N cities in a country");
+            System.out.println("16. Top N cities in a district");
             System.out.println("0. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
@@ -112,6 +117,49 @@ public class Menu {
                     String dis = scanner.nextLine();
                     ArrayList<City> districtCities = city.getCitiesDistrict(dis);
                     city.printCities(districtCities);
+                    break;
+                }
+                case 12: {
+                    System.out.print("Enter N: ");
+                    int n = scanner.nextInt();
+                    ArrayList<City> topCitiesWorld = city.getCitiesPopulation(n);
+                    city.printCities(topCitiesWorld);
+                    break;
+                }
+                case 13: {
+                    System.out.print("Enter continent: ");
+                    String continent = scanner.nextLine();
+                    System.out.print("Enter N: ");
+                    int n = scanner.nextInt();
+                    ArrayList<City> topCitiesInContinent = city.getTopCitiesContinent(continent, n);
+                    city.printCities(topCitiesInContinent);
+                    break;
+                }
+                case 14: {
+                    System.out.print("Enter region: ");
+                    String region = scanner.nextLine();
+                    System.out.print("Enter N: ");
+                    int n = scanner.nextInt();
+                    ArrayList<City> topCitiesInRegion = city.getTopCitiesRegion(region, n);
+                    city.printCities(topCitiesInRegion);
+                    break;
+                }
+                case 15: {
+                    System.out.print("Enter country: ");
+                    String country = scanner.nextLine();
+                    System.out.print("Enter N: ");
+                    int n = scanner.nextInt();
+                    ArrayList<City> topCitiesInCountry = city.getTopCitiesCountry(country, n);
+                    city.printCities(topCitiesInCountry);
+                    break;
+                }
+                case 16: {
+                    System.out.print("Enter district: ");
+                    String district = scanner.nextLine();
+                    System.out.print("Enter N: ");
+                    int n = scanner.nextInt();
+                    ArrayList<City> topCitiesInDistrict = city.getTopCitiesDistrict(district, n);
+                    city.printCities(topCitiesInDistrict);
                     break;
                 }
                 case 0:  {

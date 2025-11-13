@@ -195,5 +195,4 @@ public class Capital {
 
         printBorder.run();
     }
-
 }

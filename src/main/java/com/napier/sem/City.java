@@ -27,7 +27,7 @@ public class City {
         return executeCityQuery(query);
     }
 //    All the cities in a continent.
-    public ArrayList<City> getCountriesContinent(String continent) {
+    public ArrayList<City> getCitiesContinent(String continent) {
         String query = "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
                 "FROM city JOIN country ON city.CountryCode = country.Code " +
                 "WHERE country.Continent = ? " +
@@ -35,8 +35,32 @@ public class City {
         return executeCityQuery(query, continent);
     }
 //    All the cities in a region
+    public ArrayList<City> getCitiesRegion(String region) {
+        String query = "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE country.Region = ? " +
+                "ORDER BY city.Population DESC";
+        return executeCityQuery(query, region);
+    }
+
 //    All the cities in a country
-//    All the cities in a districtt
+    public ArrayList<City> getCitiesCountry(String country) {
+        String query = "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE country.Name = ? " +
+                "ORDER BY city.Population DESC";
+        return executeCityQuery(query, country);
+    }
+
+//    All the cities in a district
+    public ArrayList<City> getCitiesDistrict(String district) {
+        String query = "SELECT city.Name, country.Name AS Country, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE city.District = ? " +
+                "ORDER BY city.Population DESC";
+        return executeCityQuery(query, district);
+    }
+
 //    The top N populated cities in the world
 //    The top N populated cities in a continent
 //    The top N populated cities in a region

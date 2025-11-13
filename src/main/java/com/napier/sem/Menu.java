@@ -28,6 +28,9 @@ public class Menu {
             System.out.println("6. Top N countries in a region");
             System.out.println("7. All the cities in the world");
             System.out.println("8. All the cities in a continent");
+            System.out.println("9. All the cities in a region");
+            System.out.println("10. All the cities in a country");
+            System.out.println("11. All the cities in a district");
             System.out.println("0. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
@@ -86,11 +89,31 @@ public class Menu {
                 case 8: {
                     System.out.print("Enter continent: ");
                     String cont = scanner.nextLine();
-                    ArrayList<City> continentCities = city.getCountriesContinent(cont);
+                    ArrayList<City> continentCities = city.getCitiesContinent(cont);
                     city.printCities(continentCities);
                     break;
                 }
-
+                case 9: {
+                    System.out.print("Enter Region: ");
+                    String reg = scanner.nextLine();
+                    ArrayList<City> regionCities = city.getCitiesRegion(reg);
+                    city.printCities(regionCities);
+                    break;
+                }
+                case 10: {
+                    System.out.print("Enter Country: ");
+                    String cou = scanner.nextLine();
+                    ArrayList<City> countryCities = city.getCitiesCountry(cou);
+                    city.printCities(countryCities);
+                    break;
+                }
+                case 11: {
+                    System.out.print("Enter District: ");
+                    String dis = scanner.nextLine();
+                    ArrayList<City> districtCities = city.getCitiesDistrict(dis);
+                    city.printCities(districtCities);
+                    break;
+                }
                 case 0:  {
                     System.out.println("Exiting menu...");
                     return;

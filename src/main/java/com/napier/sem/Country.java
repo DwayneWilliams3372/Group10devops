@@ -24,18 +24,18 @@ public class Country {
     //  All countries in the world
     public ArrayList<Country> getAllCountriesByPopulation() {
         String query =
-                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, " +
-                        "(SELECT city.Name FROM city WHERE city.ID = country.Capital) AS Capital " +
-                        "FROM country ORDER BY country.Population DESC";
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID " +
+                        "ORDER BY country.Population DESC";
         return executeCountryQuery(query);
     }
 
     //   All countries in a continent
     public ArrayList<Country> getCountriesByContinent(String continent) {
         String query =
-                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, " +
-                        "(SELECT city.Name FROM city WHERE city.ID = country.Capital) AS Capital " +
-                        "FROM country WHERE country.Continent = ? " +
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID " +
+                        "WHERE country.Continent = ? " +
                         "ORDER BY country.Population DESC";
         return executeCountryQuery(query, continent);
     }
@@ -43,9 +43,9 @@ public class Country {
     //    All countries in a region
     public ArrayList<Country> getCountriesByRegion(String region) {
         String query =
-                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, " +
-                        "(SELECT city.Name FROM city WHERE city.ID = country.Capital) AS Capital " +
-                        "FROM country WHERE country.Region = ? " +
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID " +
+                        "WHERE country.Region = ? " +
                         "ORDER BY country.Population DESC";
         return executeCountryQuery(query, region);
     }
@@ -53,18 +53,18 @@ public class Country {
     //    Top N populated countries in the world
     public ArrayList<Country> getTopCountriesInWorld(int n) {
         String query =
-                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, " +
-                        "(SELECT city.Name FROM city WHERE city.ID = country.Capital) AS Capital " +
-                        "FROM country ORDER BY country.Population DESC LIMIT ? ";
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID " +
+                        "ORDER BY country.Population DESC LIMIT ?";
         return executeCountryQueryWithLimit(query, n);
     }
 
     //    Top N populated countries in a continent
     public ArrayList<Country> getTopCountriesInContinent(String continent, int n) {
         String query =
-                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, " +
-                        "(SELECT city.Name FROM city WHERE city.ID = country.Capital) AS Capital " +
-                        "FROM country WHERE country.Continent = ? " +
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID " +
+                        "WHERE country.Continent = ? " +
                         "ORDER BY country.Population DESC LIMIT ?";
         return executeCountryQuery(query, continent, n);
     }
@@ -72,10 +72,10 @@ public class Country {
     //    Top N populated countries in a region
     public ArrayList<Country> getTopCountriesInRegion(String region, int n) {
         String query =
-                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, " +
-                        "(SELECT city.Name FROM city WHERE city.ID = country.Capital) AS Capital " +
-                        "FROM country WHERE country.Region = ? " +
-                        "ORDER BY country.Population DESC ?";
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID " +
+                        "WHERE country.Region = ? " +
+                        "ORDER BY country.Population DESC LIMIT ?";
         return executeCountryQuery(query, region, n);
     }
 
@@ -167,12 +167,51 @@ public class Country {
             return;
         }
 
-        System.out.printf("%-10s %-40s %-20s %-20s %-20s %-30s%n",
-                "Code", "Name", "Continent", "Region", "Population", "Capital");
+        // Define column headers
+        String[] headers = {"Code", "Name", "Continent", "Region", "Population", "Capital"};
+
+        // Compute max width for each column
+        int[] widths = new int[headers.length];
+        for (int i = 0; i < headers.length; i++) {
+            widths[i] = headers[i].length();
+        }
 
         for (Country c : countries) {
-            System.out.printf("%-10s %-40s %-20s %-20s %-20d %-30s%n",
-                    c.code, c.name, c.continent, c.region, c.population, c.capital);
+            widths[0] = Math.max(widths[0], c.code.length());
+            widths[1] = Math.max(widths[1], c.name.length());
+            widths[2] = Math.max(widths[2], c.continent.length());
+            widths[3] = Math.max(widths[3], c.region.length());
+            widths[4] = Math.max(widths[4], String.valueOf(c.population).length());
+            widths[5] = Math.max(widths[5], c.capital.length());
         }
+
+        // Helper to print a border line
+        Runnable printBorder = () -> {
+            for (int w : widths) {
+                System.out.print("+" + "-".repeat(w + 2));
+            }
+            System.out.println("+");
+        };
+
+        // Print header
+        printBorder.run();
+        for (int i = 0; i < headers.length; i++) {
+            System.out.printf("| %-" + widths[i] + "s ", headers[i]);
+        }
+        System.out.println("|");
+        printBorder.run();
+
+        // Print rows
+        for (Country c : countries) {
+            System.out.printf("| %-" + widths[0] + "s ", c.code);
+            System.out.printf("| %-" + widths[1] + "s ", c.name);
+            System.out.printf("| %-" + widths[2] + "s ", c.continent);
+            System.out.printf("| %-" + widths[3] + "s ", c.region);
+            System.out.printf("| % " + widths[4] + "d ", c.population);
+            System.out.printf("| %-" + widths[5] + "s ", c.capital);
+            System.out.println("|");
+        }
+
+        printBorder.run();
     }
 }

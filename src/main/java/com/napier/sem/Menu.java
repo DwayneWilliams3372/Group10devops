@@ -11,6 +11,7 @@ public class Menu {
     private final Country country;
     private final City city;
     private final Capital capital;
+    private final Population population;
     private final Scanner scanner = new Scanner(System.in);
 
     public Menu(Connection con) {
@@ -18,6 +19,7 @@ public class Menu {
         this.country = new Country(con);
         this.city = new City(con);
         this.capital = new Capital(con);
+        this.population = new Population(con);
     }
 
     public void start() {
@@ -45,6 +47,9 @@ public class Menu {
             System.out.println("20. Top N capital cities in the world ");
             System.out.println("21. Top N capital cities in a continent");
             System.out.println("22. Top N capital cities in a region");
+            System.out.println("23. The population of people, people living in cities, and people not living in cities in each continent");
+            System.out.println("24. The population of people, people living in cities, and people not living in cities in each region");
+            System.out.println("25. The population of people, people living in cities, and people not living in cities in each country");
             System.out.println("0. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
@@ -213,6 +218,21 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<Capital>  topCapitalsRegion = capital.topCapitalsRegion(region, n);
                     capital.printCapitals(topCapitalsRegion);
+                    break;
+                }
+                case 23: {
+                    ArrayList<Population> populationsContinent = population.continentPopulation();
+                    population.printPopulation(populationsContinent);
+                    break;
+                }
+                case 24: {
+                    ArrayList<Population> populationsRegion = population.regionPopulation();
+                    population.printPopulation(populationsRegion);
+                    break;
+                }
+                case 25: {
+                    ArrayList<Population> populationsCountry = population.countryPopulation();
+                    population.printPopulation(populationsCountry);
                     break;
                 }
                 case 0:  {

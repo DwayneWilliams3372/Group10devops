@@ -1,5 +1,6 @@
 package com.napier.sem;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -9,12 +10,14 @@ public class Menu {
     private final Connection con;
     private final Country country;
     private final City city;
+    private final Capital capital;
     private final Scanner scanner = new Scanner(System.in);
 
     public Menu(Connection con) {
         this.con = con;
         this.country = new Country(con);
         this.city = new City(con);
+        this.capital = new Capital(con);
     }
 
     public void start() {
@@ -36,6 +39,12 @@ public class Menu {
             System.out.println("14. Top N cities in a region");
             System.out.println("15. Top N cities in a country");
             System.out.println("16. Top N cities in a district");
+            System.out.println("17. All the capital cities in the world");
+            System.out.println("18. All the capital cities in a continent");
+            System.out.println("19. All the capital cities in a region");
+            System.out.println("20. Top N capital cities in the world ");
+            System.out.println("21. Top N capital cities in a continent");
+            System.out.println("22. Top N capital cities in a region");
             System.out.println("0. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
@@ -160,6 +169,50 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<City> topCitiesInDistrict = city.getTopCitiesDistrict(district, n);
                     city.printCities(topCitiesInDistrict);
+                    break;
+                }
+                case 17: {
+                    ArrayList<Capital> cities = capital.getCapitals();
+                    capital.printCapitals(cities);
+                    break;
+                }
+                case 18: {
+                    System.out.print("Enter continent: ");
+                    String continent = scanner.nextLine();
+                    ArrayList<Capital> capitalsContinent = capital.getCapitalsContinent(continent);
+                    capital.printCapitals(capitalsContinent);
+                    break;
+                }
+                case 19: {
+                    System.out.print("Enter region: ");
+                    String region = scanner.nextLine();
+                    ArrayList<Capital> capitalsRegion = capital.getCapitalsRegion(region);
+                    capital.printCapitals(capitalsRegion);
+                    break;
+                }
+                case 20: {
+                    System.out.print("Enter N: ");
+                    int n = scanner.nextInt();
+                    ArrayList<Capital> capitalsPopulation = capital.getCapitalsPopulation(n);
+                    capital.printCapitals(capitalsPopulation);
+                    break;
+                }
+                case 21: {
+                    System.out.print("Enter continent: ");
+                    String continent = scanner.nextLine();
+                    System.out.print("Enter N: ");
+                    int n = scanner.nextInt();
+                    ArrayList<Capital> topCapitalsContinent = capital.topCapitalsContinent(continent, n);
+                    capital.printCapitals(topCapitalsContinent);
+                    break;
+                }
+                case 22: {
+                    System.out.print("Enter region: ");
+                    String region = scanner.nextLine();
+                    System.out.print("Enter N: ");
+                    int n = scanner.nextInt();
+                    ArrayList<Capital>  topCapitalsRegion = capital.topCapitalsRegion(region, n);
+                    capital.printCapitals(topCapitalsRegion);
                     break;
                 }
                 case 0:  {

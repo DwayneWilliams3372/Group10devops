@@ -61,8 +61,8 @@ public class Menu {
                     String con = scanner.nextLine();
                     System.out.print("Enter N: ");
                     int n = scanner.nextInt();
-                    ArrayList<Country> topCoutriesInContinent = country.getTopCountriesInContinent(con, n);
-                    country.printCountries(topCoutriesInContinent);
+                    ArrayList<Country> topCountriesInContinent = country.getTopCountriesInContinent(con, n);
+                    country.printCountries(topCountriesInContinent);
                     break;
                 }
                 case 6: {
@@ -70,7 +70,8 @@ public class Menu {
                     String region = scanner.nextLine();
                     System.out.print("Enter N: ");
                     int n = scanner.nextInt();
-                    ArrayList<Country> topCoutriesInRegion = country.getTopCountriesInRegion(region, n);
+                    ArrayList<Country> topCountriesInRegion = country.getTopCountriesInRegion(region, n);
+                    country.printCountries(topCountriesInRegion);
                     break;
                 }
                 case 0:  {

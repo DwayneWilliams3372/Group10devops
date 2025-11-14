@@ -2,6 +2,7 @@ package com.napier.sem;
 
 import java.sql.Array;
 import java.sql.Connection;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -50,6 +51,12 @@ public class Menu {
             System.out.println("23. The population of people, people living in cities, and people not living in cities in each continent");
             System.out.println("24. The population of people, people living in cities, and people not living in cities in each region");
             System.out.println("25. The population of people, people living in cities, and people not living in cities in each country");
+            System.out.println("26. The population of the world");
+            System.out.println("27. The population of a continent");
+            System.out.println("28. The population of a region");
+            System.out.println("29. The population of a country");
+            System.out.println("30. The population of a district");
+            System.out.println("31. The population of a city");
             System.out.println("0. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
@@ -233,6 +240,46 @@ public class Menu {
                 case 25: {
                     ArrayList<Population> populationsCountry = population.countryPopulation();
                     population.printPopulation(populationsCountry);
+                    break;
+                }
+                case 26: {
+                    ArrayList<Population> worldPopulation = population.populationWorld();
+                    population.printSinglePopulation(worldPopulation);
+                    break;
+                }
+                case 27: {
+                    System.out.print("Enter continent: ");
+                    String continent = scanner.nextLine();
+                    ArrayList<Population> continentPopulation = population.populationContinent(continent);
+                    population.printSinglePopulation(continentPopulation);
+                    break;
+                }
+                case 28: {
+                    System.out.print("Enter region: ");
+                    String region = scanner.nextLine();
+                    ArrayList<Population> regionPopulation = population.populationRegion(region);
+                    population.printSinglePopulation(regionPopulation);
+                    break;
+                }
+                case 29: {
+                    System.out.print("Enter country: ");
+                    String country = scanner.nextLine();
+                    ArrayList<Population> countryPopulation = population.populationCountry(country);
+                    population.printSinglePopulation(countryPopulation);
+                    break;
+                }
+                case 30: {
+                    System.out.print("Enter district: ");
+                    String district = scanner.nextLine();
+                    ArrayList<Population>  districtPopulation = population.populationDistrict(district);
+                    population.printSinglePopulation(districtPopulation);
+                    break;
+                }
+                case 31: {
+                    System.out.print("Enter city: ");
+                    String city = scanner.nextLine();
+                    ArrayList<Population> cityPopulation = population.populationCity(city);
+                    population.printSinglePopulation(cityPopulation);
                     break;
                 }
                 case 0:  {

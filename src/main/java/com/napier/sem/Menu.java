@@ -1,5 +1,7 @@
 package com.napier.sem;
 
+import jdk.jfr.Percentage;
+
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLOutput;
@@ -13,6 +15,7 @@ public class Menu {
     private final City city;
     private final Capital capital;
     private final Population population;
+    private final Language language;
     private final Scanner scanner = new Scanner(System.in);
 
     public Menu(Connection con) {
@@ -21,6 +24,7 @@ public class Menu {
         this.city = new City(con);
         this.capital = new Capital(con);
         this.population = new Population(con);
+        this.language = new Language(con);
     }
 
     public void start() {
@@ -57,6 +61,7 @@ public class Menu {
             System.out.println("29. The population of a country");
             System.out.println("30. The population of a district");
             System.out.println("31. The population of a city");
+            System.out.println("32. The specific languages from greatest number to smallest, including the percentage of the world population");
             System.out.println("0. Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
@@ -280,6 +285,11 @@ public class Menu {
                     String city = scanner.nextLine();
                     ArrayList<Population> cityPopulation = population.populationCity(city);
                     population.printSinglePopulation(cityPopulation);
+                    break;
+                }
+                case 32: {
+                    ArrayList<Language> getLanguage = language.getLanguages();
+                    language.printLanguages(getLanguage);
                     break;
                 }
                 case 0:  {

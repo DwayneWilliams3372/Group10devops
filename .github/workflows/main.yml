@@ -24,7 +24,7 @@ jobs:
         run: docker compose up -d
 
       - name: Run app for connection test
-        run: docker compose exec -e NON_INTERACTIVE=true app java -jar /tmp/semApp.jar
+        run: docker compose exec -e NON_INTERACTIVE=true app java -jar /tmp/devops.jar
 
       - name: View DB logs
         run: docker compose logs db

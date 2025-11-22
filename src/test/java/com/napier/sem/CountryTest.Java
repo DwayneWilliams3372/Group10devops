@@ -2,9 +2,9 @@ package com.napier.sem;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,6 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit Tests for the Country class using Mockito Extension
+ */
+@ExtendWith(MockitoExtension.class)
 class CountryTest {
 
     @Mock
@@ -25,19 +29,10 @@ class CountryTest {
     private ResultSet mockResultSet;
 
     private Country country;
-    private AutoCloseable closeable;
 
     @BeforeEach
-    void setUp() throws SQLException {
-        closeable = MockitoAnnotations.openMocks(this);
-        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
-        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+    void setUp() {
         country = new Country(mockConnection);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        closeable.close();
     }
 
     @Test
@@ -53,7 +48,9 @@ class CountryTest {
 
     @Test
     void testGetAllCountriesByPopulation() throws SQLException {
-        // Setup mock result set behavior
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getString("Code")).thenReturn("CHN", "IND");
         when(mockResultSet.getString("Name")).thenReturn("China", "India");
@@ -81,6 +78,9 @@ class CountryTest {
 
     @Test
     void testGetCountriesByContinent() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, false);
         when(mockResultSet.getString("Code")).thenReturn("DEU");
         when(mockResultSet.getString("Name")).thenReturn("Germany");
@@ -103,10 +103,14 @@ class CountryTest {
         assertEquals("Berlin", resultCountry.capital);
 
         verify(mockPreparedStatement).setString(1, "Europe");
+        verify(mockPreparedStatement).executeQuery();
     }
 
     @Test
     void testGetCountriesByRegion() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, false);
         when(mockResultSet.getString("Code")).thenReturn("EGY");
         when(mockResultSet.getString("Name")).thenReturn("Egypt");
@@ -129,10 +133,14 @@ class CountryTest {
         assertEquals("Cairo", resultCountry.capital);
 
         verify(mockPreparedStatement).setString(1, "Northern Africa");
+        verify(mockPreparedStatement).executeQuery();
     }
 
     @Test
     void testGetTopCountriesInWorld() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getString("Code")).thenReturn("USA", "IDN");
         when(mockResultSet.getString("Name")).thenReturn("United States", "Indonesia");
@@ -155,10 +163,14 @@ class CountryTest {
         assertEquals("Washington", firstCountry.capital);
 
         verify(mockPreparedStatement).setInt(1, 5);
+        verify(mockPreparedStatement).executeQuery();
     }
 
     @Test
     void testGetTopCountriesInContinent() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, false);
         when(mockResultSet.getString("Code")).thenReturn("BRA");
         when(mockResultSet.getString("Name")).thenReturn("Brazil");
@@ -182,10 +194,14 @@ class CountryTest {
 
         verify(mockPreparedStatement).setString(1, "South America");
         verify(mockPreparedStatement).setInt(2, 3);
+        verify(mockPreparedStatement).executeQuery();
     }
 
     @Test
     void testGetTopCountriesInRegion() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, false);
         when(mockResultSet.getString("Code")).thenReturn("AUS");
         when(mockResultSet.getString("Name")).thenReturn("Australia");
@@ -209,6 +225,7 @@ class CountryTest {
 
         verify(mockPreparedStatement).setString(1, "Australia and New Zealand");
         verify(mockPreparedStatement).setInt(2, 2);
+        verify(mockPreparedStatement).executeQuery();
     }
 
     @Test
@@ -271,6 +288,9 @@ class CountryTest {
 
     @Test
     void testMultipleCountriesInResultSet() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, true, true, false);
         when(mockResultSet.getString("Code")).thenReturn("FRA", "GBR", "ITA");
         when(mockResultSet.getString("Name")).thenReturn("France", "United Kingdom", "Italy");
@@ -295,6 +315,9 @@ class CountryTest {
 
     @Test
     void testZeroLimitParameter() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false); // No results expected with limit 0
 
         ArrayList<Country> countries = country.getTopCountriesInWorld(0);
@@ -302,20 +325,28 @@ class CountryTest {
         assertNotNull(countries);
         assertTrue(countries.isEmpty());
         verify(mockPreparedStatement).setInt(1, 0);
+        verify(mockPreparedStatement).executeQuery();
     }
 
     @Test
     void testEmptyResultSet() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false); // No results
 
         ArrayList<Country> countries = country.getAllCountriesByPopulation();
 
         assertNotNull(countries);
         assertTrue(countries.isEmpty());
+        verify(mockPreparedStatement).executeQuery();
     }
 
     @Test
     void testSpecialCharactersInParameters() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, false);
         when(mockResultSet.getString("Code")).thenReturn("RUS");
         when(mockResultSet.getString("Name")).thenReturn("Russia");
@@ -330,10 +361,14 @@ class CountryTest {
         assertNotNull(countries);
         assertEquals(1, countries.size());
         verify(mockPreparedStatement).setString(1, "Eastern Europe");
+        verify(mockPreparedStatement).executeQuery();
     }
 
     @Test
     void testLargePopulationNumbers() throws SQLException {
+        // Setup mock behavior for this specific test
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, false);
         when(mockResultSet.getString("Code")).thenReturn("CHN");
         when(mockResultSet.getString("Name")).thenReturn("China");
@@ -347,5 +382,6 @@ class CountryTest {
         assertNotNull(countries);
         assertEquals(1, countries.size());
         assertEquals(Integer.MAX_VALUE, countries.get(0).population);
+        verify(mockPreparedStatement).executeQuery();
     }
 }

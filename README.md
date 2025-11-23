@@ -1,6 +1,8 @@
 ## DEVOPS GROUP 10
 
-[![codecov](https://codecov.io/gh/DwayneWilliams3372/Group10devops/graph/badge.svg?token=NRK3850ZE8)](https://codecov.io/gh/DwayneWilliams3372/Group10devops)
+<a href="https://codecov.io/gh/DwayneWilliams3372/Group10devops" > 
+ <img src="https://codecov.io/gh/DwayneWilliams3372/Group10devops/graph/badge.svg?token=NRK3850ZE8"/> 
+ </a>
 
 [![A workflow for Group-10 App](https://github.com/DwayneWilliams3372/Group10devops/actions/workflows/main.yml/badge.svg)](https://github.com/DwayneWilliams3372/Group10devops/actions/workflows/main.yml)
 

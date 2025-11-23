@@ -33,7 +33,8 @@ jobs:
         with:
           name: jacoco-coverage-report
           path: target/site/jacoco/
-
+          flags: Unit Tests
+          verbose: true
 
   Build:
     name: Build and Start Using docker-compose

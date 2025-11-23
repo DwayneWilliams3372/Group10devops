@@ -1,5 +1,9 @@
 package com.napier.sem;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -137,6 +141,40 @@ public class Population {
         printBorder.run();
     }
 
+    public void outputPopulation(ArrayList<Population> populations, String filename) {
+        System.out.println("Starting outputPopulation method...");
+        if (populations == null || populations.isEmpty()) {
+            System.out.println("No populations to output");
+            return;
+        }
+        System.out.println("Population list has " + populations.size() + " items. Generating Markdown...");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("| Name | Total Population | City Population | % in cities | Non City Population | % in Non Cities |\r\n");
+        sb.append("| --- | --- | --- | --- | --- | --- |\r\n");
+        for (Population p : populations) {
+            if (p == null) continue;
+            sb.append(" | " + p.Name + " | " + p.totalPopulation + " | " + p.cityPopulation + " | " +
+                    p.cityPercentage + " | " + p.noCityPopulation + " | " + p.noCityPercentage + "|\r\n");
+        }
+        System.out.println("Markdown content generated. Attempting to write to file: /app/reports/" + filename);
+        try {
+            File reportsDir = new File("/app/reports/");  // Absolute path to match volume mount
+            if (!reportsDir.exists()) {
+                boolean dirCreated = reportsDir.mkdirs();
+                System.out.println("Reports directory created: " + dirCreated + " at " + reportsDir.getAbsolutePath());
+            }
+            File outputFile = new File("/app/reports/" + filename);  // Absolute path
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+            writer.write(sb.toString());
+            writer.close();
+            System.out.println("File written successfully to: " + outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     // Population of single continent/ region/ country/ district/ city
     public ArrayList<Population> populationWorld() {
         String query = "SELECT 'World' AS Name, SUM(Population) AS Population " +
@@ -266,5 +304,38 @@ public class Population {
         }
 
         printBorder.run();
+    }
+
+    public void outputSinglePopulation(ArrayList<Population> populations, String filename) {
+        System.out.println("Starting outputSinglePopulation method...");
+        if (populations == null || populations.isEmpty()) {
+            System.out.println("No populations to output");
+            return;
+        }
+        System.out.println("Population list has " + populations.size() + " items. Generating Markdown...");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("| Name | Total Population |\r\n");
+        sb.append("| --- | --- |\r\n");
+        for (Population p : populations) {
+            if (p == null) continue;
+            sb.append(" | " + p.Name + " | " + p.totalPopulation + "|\r\n");
+        }
+        System.out.println("Markdown content generated. Attempting to write to file: /app/reports/" + filename);
+        try {
+            File reportsDir = new File("/app/reports/");  // Absolute path to match volume mount
+            if (!reportsDir.exists()) {
+                boolean dirCreated = reportsDir.mkdirs();
+                System.out.println("Reports directory created: " + dirCreated + " at " + reportsDir.getAbsolutePath());
+            }
+            File outputFile = new File("/app/reports/" + filename);  // Absolute path
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+            writer.write(sb.toString());
+            writer.close();
+            System.out.println("File written successfully to: " + outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

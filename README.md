@@ -1,5 +1,7 @@
 ## DEVOPS GROUP 10
 
+[![codecov](https://codecov.io/gh/DwayneWilliams3372/Group10devops/graph/badge.svg?token=NRK3850ZE8)](https://codecov.io/gh/DwayneWilliams3372/Group10devops)
+
 [![A workflow for Group-10 App](https://github.com/DwayneWilliams3372/Group10devops/actions/workflows/main.yml/badge.svg)](https://github.com/DwayneWilliams3372/Group10devops/actions/workflows/main.yml)
 
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/DwayneWilliams3372/Group10devops/main.yml?branch=develop&style=flat-square)

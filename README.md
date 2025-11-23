@@ -9,8 +9,7 @@
 
 [![Releases](https://img.shields.io/github/release/DwayneWilliams3372/Group10devops/all.svg?style=flat-square)](https://github.com/DwayneWilliams3372/Group10devops/releases)
 
-[![codecov](https://codecov.io/gh/DwayneWilliams3372/Group10devops/graph/badge.svg?token=NRK3850ZE8)](https://codecov.io/gh/DwayneWilliams3372/Group10devops)
-
+[![codecov](https://codecov.io/github/DwayneWilliams3372/Group10devops/graph/badge.svg?token=NRK3850ZE8)](https://codecov.io/github/DwayneWilliams3372/Group10devops)
 
 **Members**
 

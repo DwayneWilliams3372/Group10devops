@@ -1,8 +1,5 @@
 ## DEVOPS GROUP 10
 
-<a href="https://codecov.io/gh/DwayneWilliams3372/Group10devops" > 
- <img src="https://codecov.io/gh/DwayneWilliams3372/Group10devops/graph/badge.svg?token=NRK3850ZE8"/> 
- </a>
 
 [![A workflow for Group-10 App](https://github.com/DwayneWilliams3372/Group10devops/actions/workflows/main.yml/badge.svg)](https://github.com/DwayneWilliams3372/Group10devops/actions/workflows/main.yml)
 
@@ -11,6 +8,8 @@
 [![LICENSE](https://img.shields.io/github/license/DwayneWilliams3372/Group10devops.svg?style=flat-square)](https://github.com/DwayneWilliams3372/Group10devops/blob/master/LICENSE)
 
 [![Releases](https://img.shields.io/github/release/DwayneWilliams3372/Group10devops/all.svg?style=flat-square)](https://github.com/DwayneWilliams3372/Group10devops/releases)
+
+[![codecov](https://codecov.io/gh/DwayneWilliams3372/Group10devops/graph/badge.svg?token=NRK3850ZE8)](https://codecov.io/gh/DwayneWilliams3372/Group10devops)
 
 **Members**
 

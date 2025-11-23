@@ -5,7 +5,7 @@ jobs:
   UnitTests:
     name: Unit Tests
     runs-on: ubuntu-22.04
-    step:
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

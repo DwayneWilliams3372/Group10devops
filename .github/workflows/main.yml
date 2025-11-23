@@ -45,7 +45,6 @@ jobs:
           flags: Unit Tests
           verbose: true
           fail_ci_if_error: false  # Don't fail the job if Codecov upload fails
-          token: ${{ secrets.CODECOV_TOKEN }}
 
   Build:
     name: Build and Start Using docker-compose

@@ -33,13 +33,13 @@ jobs:
         with:
           name: jacoco-coverage-report
           path: target/site/jacoco/
-
       - name: CodeCov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
+          # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
           directory: ./target/site/jacoco
-          flags: Unit Tests
-          verbose: true
+          flags: Unit Tests # optional
+          verbose: true # optional (default = false)
 
   Build:
     name: Build and Start Using docker-compose

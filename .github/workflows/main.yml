@@ -34,6 +34,13 @@ jobs:
           name: jacoco-coverage-report
           path: target/site/jacoco/
 
+      - name: CodeCov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./target/site/jacoco
+          flags: Unit Tests
+          verbose: true
+
   Build:
     name: Build and Start Using docker-compose
     runs-on: ubuntu-22.04

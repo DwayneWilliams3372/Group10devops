@@ -71,6 +71,7 @@ public class Menu {
                 case 1: {
                     ArrayList<Country> countries = country.getAllCountriesByPopulation();
                     country.printCountries(countries);
+                    country.outputCountries(countries, "1.md");
                     break;
                 }
                 case 2: {
@@ -78,6 +79,7 @@ public class Menu {
                     String cont = scanner.nextLine();
                     ArrayList<Country> continentCountries = country.getCountriesByContinent(cont);
                     country.printCountries(continentCountries);
+                    country.outputCountries(continentCountries, "2.md");
                     break;
                 }
                 case 3: {
@@ -85,6 +87,7 @@ public class Menu {
                     String region = scanner.nextLine();
                     ArrayList<Country> regionCountries = country.getCountriesByRegion(region);
                     country.printCountries(regionCountries);
+                    country.outputCountries(regionCountries, "3.md");
                     break;
                 }
                 case 4: {
@@ -92,6 +95,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<Country> topCountries = country.getTopCountriesInWorld(n);
                     country.printCountries(topCountries);
+                    country.outputCountries(topCountries, "4.md");
                     break;
                 }
                 case 5: {
@@ -101,6 +105,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<Country> topCountriesInContinent = country.getTopCountriesInContinent(con, n);
                     country.printCountries(topCountriesInContinent);
+                    country.outputCountries(topCountriesInContinent, "5.md");
                     break;
                 }
                 case 6: {
@@ -110,11 +115,13 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<Country> topCountriesInRegion = country.getTopCountriesInRegion(region, n);
                     country.printCountries(topCountriesInRegion);
+                    country.outputCountries(topCountriesInRegion, "6.md");
                     break;
                 }
                 case 7: {
                     ArrayList<City> cities = city.getCities();
                     city.printCities(cities);
+                    city.outputCities(cities, "7.md");
                     break;
                 }
                 case 8: {
@@ -122,6 +129,7 @@ public class Menu {
                     String cont = scanner.nextLine();
                     ArrayList<City> continentCities = city.getCitiesContinent(cont);
                     city.printCities(continentCities);
+                    city.outputCities(continentCities, "8.md");
                     break;
                 }
                 case 9: {
@@ -129,6 +137,7 @@ public class Menu {
                     String reg = scanner.nextLine();
                     ArrayList<City> regionCities = city.getCitiesRegion(reg);
                     city.printCities(regionCities);
+                    city.outputCities(regionCities, "9.md");
                     break;
                 }
                 case 10: {
@@ -136,6 +145,7 @@ public class Menu {
                     String cou = scanner.nextLine();
                     ArrayList<City> countryCities = city.getCitiesCountry(cou);
                     city.printCities(countryCities);
+                    city.outputCities(countryCities, "10.md");
                     break;
                 }
                 case 11: {
@@ -143,6 +153,7 @@ public class Menu {
                     String dis = scanner.nextLine();
                     ArrayList<City> districtCities = city.getCitiesDistrict(dis);
                     city.printCities(districtCities);
+                    city.outputCities(districtCities, "11.md");
                     break;
                 }
                 case 12: {
@@ -150,6 +161,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<City> topCitiesWorld = city.getCitiesPopulation(n);
                     city.printCities(topCitiesWorld);
+                    city.outputCities(topCitiesWorld, "12.md");
                     break;
                 }
                 case 13: {
@@ -159,6 +171,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<City> topCitiesInContinent = city.getTopCitiesContinent(continent, n);
                     city.printCities(topCitiesInContinent);
+                    city.outputCities(topCitiesInContinent, "13.md");
                     break;
                 }
                 case 14: {
@@ -168,6 +181,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<City> topCitiesInRegion = city.getTopCitiesRegion(region, n);
                     city.printCities(topCitiesInRegion);
+                    city.outputCities(topCitiesInRegion, "14.md");
                     break;
                 }
                 case 15: {
@@ -177,6 +191,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<City> topCitiesInCountry = city.getTopCitiesCountry(country, n);
                     city.printCities(topCitiesInCountry);
+                    city.outputCities(topCitiesInCountry, "15.md");
                     break;
                 }
                 case 16: {
@@ -186,6 +201,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<City> topCitiesInDistrict = city.getTopCitiesDistrict(district, n);
                     city.printCities(topCitiesInDistrict);
+                    city.outputCities(topCitiesInDistrict, "16.md");
                     break;
                 }
                 case 17: {

@@ -201,7 +201,7 @@ public class Capital {
     }
 
     public void outputCapitals(ArrayList<Capital> capitals, String filename) {
-        System.out.println("Starting outputCountries method...");
+        System.out.println("Starting outputCapitals method...");
         if (capitals == null || capitals.isEmpty()) {
             System.out.println("No capitals to output");
             return;

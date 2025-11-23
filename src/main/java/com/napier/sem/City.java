@@ -236,7 +236,7 @@ public class City {
     }
 
     public void outputCities(ArrayList<City> cities, String filename) {
-        System.out.println("Starting outputCountries method...");
+        System.out.println("Starting outputCities method...");
         if (cities == null || cities.isEmpty()) {
             System.out.println("No cities to output");
             return;

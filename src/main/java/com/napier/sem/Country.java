@@ -231,7 +231,7 @@ public class Country {
             System.out.println("No countries to output");
             return;
         }
-        System.out.println("Countries list has " + countries.size() + " items. Generating Markdown...");
+        System.out.println("Country list has " + countries.size() + " items. Generating Markdown...");
 
         StringBuilder sb = new StringBuilder();
         sb.append("| Code | Name | Continent | Region | Population | Capital |\r\n");

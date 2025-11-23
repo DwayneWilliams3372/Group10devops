@@ -241,7 +241,7 @@ public class City {
             System.out.println("No cities to output");
             return;
         }
-        System.out.println("Countries list has " + cities.size() + " items. Generating Markdown...");
+        System.out.println("City list has " + cities.size() + " items. Generating Markdown...");
 
         StringBuilder sb = new StringBuilder();
         sb.append("| Name | Country | District | Population |\r\n");

@@ -206,7 +206,7 @@ public class Capital {
             System.out.println("No capitals to output");
             return;
         }
-        System.out.println("Countries list has " + capitals.size() + " items. Generating Markdown...");
+        System.out.println("Capital list has " + capitals.size() + " items. Generating Markdown...");
 
         StringBuilder sb = new StringBuilder();
         sb.append("| Name | Country | Population |\r\n");

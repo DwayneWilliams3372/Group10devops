@@ -1,5 +1,6 @@
 name: A workflow for my App
-on: push
+
+on: push  # Runs on pushes to any branch (including develop, once the file is there)
 
 jobs:
   UnitTests:
@@ -15,10 +16,13 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: 'temurin'  # Standardized for consistency
 
       - name: Run Unit Tests + JaCoCo Coverage
         run: mvn -B clean test jacoco:report
+
+      - name: Verify JaCoCo Report Exists  # Added for debugging coverage issues
+        run: ls -la target/site/jacoco/ || echo "JaCoCo report not found!"
 
       - name: Upload Test Reports
         if: always()
@@ -33,13 +37,14 @@ jobs:
         with:
           name: jacoco-coverage-report
           path: target/site/jacoco/
-      - name: CodeCov
+
+      - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
-          # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-          directory: ./target/site/jacoco
-          flags: Unit Tests # optional
-          verbose: true # optional (default = false)
+          file: ./target/site/jacoco/jacoco.xml  # Specify exact file for reliability
+          flags: Unit Tests
+          verbose: true
+          fail_ci_if_error: false  # Don't fail the job if Codecov upload fails
 
   Build:
     name: Build and Start Using docker-compose
@@ -54,13 +59,16 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'  # Standardized for consistency
 
       - name: Build JAR
         run: mvn package -DskipTests
 
       - name: Start Docker Compose (detached)
-        run: docker compose up -d
+        run: docker compose up -d --build  # Added --build to ensure latest JAR is used
+
+      - name: Wait for services to be ready  # Added to avoid connection issues
+        run: sleep 10
 
       - name: Run app for connection test
         run: docker compose exec -e NON_INTERACTIVE=true app java -jar /tmp/devops.jar
@@ -69,4 +77,5 @@ jobs:
         run: docker compose logs db
 
       - name: Stop Docker Compose
+        if: always()  # Ensure cleanup even on failure
         run: docker compose down

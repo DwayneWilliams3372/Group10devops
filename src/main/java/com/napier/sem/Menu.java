@@ -321,6 +321,7 @@ public class Menu {
                 case 32: {
                     ArrayList<Language> getLanguage = language.getLanguages();
                     language.printLanguages(getLanguage);
+                    language.outputLanguage(getLanguage, "32.md");
                     break;
                 }
                 case 0:  {

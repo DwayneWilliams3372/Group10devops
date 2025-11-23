@@ -207,6 +207,7 @@ public class Menu {
                 case 17: {
                     ArrayList<Capital> cities = capital.getCapitals();
                     capital.printCapitals(cities);
+                    capital.outputCapitals(cities, "17.md");
                     break;
                 }
                 case 18: {
@@ -214,6 +215,7 @@ public class Menu {
                     String continent = scanner.nextLine();
                     ArrayList<Capital> capitalsContinent = capital.getCapitalsContinent(continent);
                     capital.printCapitals(capitalsContinent);
+                    capital.outputCapitals(capitalsContinent, "18.md");
                     break;
                 }
                 case 19: {
@@ -221,6 +223,7 @@ public class Menu {
                     String region = scanner.nextLine();
                     ArrayList<Capital> capitalsRegion = capital.getCapitalsRegion(region);
                     capital.printCapitals(capitalsRegion);
+                    capital.outputCapitals(capitalsRegion, "19.md");
                     break;
                 }
                 case 20: {
@@ -228,6 +231,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<Capital> capitalsPopulation = capital.getCapitalsPopulation(n);
                     capital.printCapitals(capitalsPopulation);
+                    capital.outputCapitals(capitalsPopulation, "20.md");
                     break;
                 }
                 case 21: {
@@ -237,6 +241,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<Capital> topCapitalsContinent = capital.topCapitalsContinent(continent, n);
                     capital.printCapitals(topCapitalsContinent);
+                    capital.outputCapitals(topCapitalsContinent, "21.md");
                     break;
                 }
                 case 22: {
@@ -246,6 +251,7 @@ public class Menu {
                     int n = scanner.nextInt();
                     ArrayList<Capital>  topCapitalsRegion = capital.topCapitalsRegion(region, n);
                     capital.printCapitals(topCapitalsRegion);
+                    capital.outputCapitals(topCapitalsRegion, "22.md");
                     break;
                 }
                 case 23: {

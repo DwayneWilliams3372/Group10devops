@@ -2,6 +2,10 @@ package com.napier.sem;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Country {
     public String code;
@@ -213,5 +217,47 @@ public class Country {
         }
 
         printBorder.run();
+    }
+
+    /**
+     * Outputs countries to a Markdown file in the ./reports/ directory.
+     *
+     * @param countries The list of countries to output.
+     * @param filename  The name of the file (e.g., "countries.md"). Include the extension if desired.
+     */
+    public void outputCountries(ArrayList<Country> countries, String filename) {
+        System.out.println("Starting outputCountries method...");
+        if (countries == null || countries.isEmpty()) {
+            System.out.println("No countries to output");
+            return;
+        }
+        System.out.println("Countries list has " + countries.size() + " items. Generating Markdown...");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("| Code | Name | Continent | Region | Population | Capital |\r\n");
+        sb.append("| --- | --- | --- | --- | --- | --- |\r\n");
+        for (Country c : countries) {
+            if (c == null) continue;
+            sb.append("| " + c.code + " | " +
+                    c.name + " | " + c.continent + " | " +
+                    c.region + " | " + c.population + " | " +
+                    c.capital + " |\r\n");
+        }
+        System.out.println("Markdown content generated. Attempting to write to file: /app/reports/" + filename);
+        try {
+            File reportsDir = new File("/app/reports/");  // Absolute path to match volume mount
+            if (!reportsDir.exists()) {
+                boolean dirCreated = reportsDir.mkdirs();
+                System.out.println("Reports directory created: " + dirCreated + " at " + reportsDir.getAbsolutePath());
+            }
+            File outputFile = new File("/app/reports/" + filename);  // Absolute path
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+            writer.write(sb.toString());
+            writer.close();
+            System.out.println("File written successfully to: " + outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

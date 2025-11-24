@@ -20,7 +20,7 @@ public class Capital {
         this.con = con;
     }
 
-    private Capital () {
+    public Capital() {
         //
     }
 

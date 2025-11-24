@@ -126,7 +126,14 @@ jobs:
         run: mvn package -DskipTests
 
       - name: Start Docker Compose (detached)
-        run: docker compose up -d --build  # Added --build to ensure latest JAR is used
+        run: docker compose up -d --build # Added --build to ensure latest JAR is used
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "latest"
+          files: |
+            ./target/*.jar
 
       - name: Wait for services to be ready  # Added to avoid connection issues
         run: sleep 10

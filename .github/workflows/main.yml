@@ -1,8 +1,8 @@
 name: A workflow for my App
-
 on:
   push:
     branches: [ "**" ]
+    tags: [ "v*" ]  # Added to trigger on version tags for releases
   pull_request:
     branches: [ master, develop ]
 
@@ -124,6 +124,14 @@ jobs:
 
       - name: Build JAR
         run: mvn package -DskipTests
+
+      - name: Create Release and Upload JAR  # Added to push JAR to GitHub Releases on tag pushes
+        if: startsWith(github.ref, 'refs/tags/')  # Only run on tag pushes
+        uses: softprops/action-gh-release@v1
+        with:
+          files: target/*.jar  # Upload the built JAR (adjust path if needed based on your pom.xml)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Start Docker Compose (detached)
         run: docker compose up -d --build # Added --build to ensure latest JAR is used

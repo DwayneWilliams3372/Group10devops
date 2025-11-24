@@ -51,6 +51,62 @@ jobs:
           verbose: true
           fail_ci_if_error: false  # Don't fail the job if Codecov upload fails
 
+  IntegrationTests:
+    name: Integration Tests
+    runs-on: ubuntu-22.04
+    services:
+      db:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: world
+          MYSQL_ROOT_PASSWORD: example
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -pexample"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install MySQL client
+        run: sudo apt-get install -y mysql-client
+
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL..."
+          for i in {1..30}; do
+          if mysqladmin ping -h127.0.0.1 -pexample --silent; then
+           echo "MySQL is ready!"
+           break
+          fi
+          echo "Still waiting..."
+          sleep 2
+          done
+
+      - name: Verify DB connection
+        run: |
+          mysql -h 127.0.0.1 -u root -pexample -e "SHOW DATABASES;"
+
+      - name: Build and run tests
+        env:
+          NON_INTERACTIVE: true
+        run: mvn -B verify --fail-at-end
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+
   Build:
     name: Build and Start Using docker-compose
     runs-on: ubuntu-22.04

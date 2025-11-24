@@ -1,17 +1,13 @@
 version: '3'
 services:
-
-  # Build app from Dockerfile in same folder
   app:
     build: .
     stdin_open: true
     tty: true
     depends_on:
       - db
-
-
-  # Build the db as name db from the Dockerfile in the db folder
-  # exposing the port if we want to run code outside a container
+    volumes:  # This should share the reports folder
+      - ./reports:/app/reports  # Host: ./reports (your project root), Container: /app/reports
   db:
     build: db/.
     restart: always

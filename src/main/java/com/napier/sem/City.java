@@ -1,5 +1,9 @@
 package com.napier.sem;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -229,5 +233,39 @@ public class City {
         }
 
         printBorder.run();
+    }
+
+    public void outputCities(ArrayList<City> cities, String filename) {
+        System.out.println("Starting outputCities method...");
+        if (cities == null || cities.isEmpty()) {
+            System.out.println("No cities to output");
+            return;
+        }
+        System.out.println("City list has " + cities.size() + " items. Generating Markdown...");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("| Name | Country | District | Population |\r\n");
+        sb.append("| --- | --- | --- | --- |\r\n");
+        for (City c : cities) {
+            if (c == null) continue;
+            sb.append(" | " + c.name + " | " + c.country + " | " +
+                    c.district + " | " + c.population + "|\r\n");
+        }
+        System.out.println("Markdown content generated. Attempting to write to file: /app/reports/" + filename);
+        try {
+            File reportsDir = new File("/app/reports/");  // Absolute path to match volume mount
+            if (!reportsDir.exists()) {
+                boolean dirCreated = reportsDir.mkdirs();
+                System.out.println("Reports directory created: " + dirCreated + " at " + reportsDir.getAbsolutePath());
+            }
+            File outputFile = new File("/app/reports/" + filename);  // Absolute path
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+            writer.write(sb.toString());
+            writer.close();
+            System.out.println("File written successfully to: " + outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

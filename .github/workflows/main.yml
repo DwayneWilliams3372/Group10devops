@@ -1,7 +1,114 @@
 name: A workflow for my App
-on: push
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ master, develop ]
 
 jobs:
+  UnitTests:
+    name: Unit Testing
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'  # Standardized for consistency
+
+      - name: Run Unit Tests + JaCoCo Coverage
+        run: mvn -B clean test jacoco:report
+
+      - name: Verify JaCoCo Report Exists  # Added for debugging coverage issues
+        run: ls -la target/site/jacoco/ || echo "JaCoCo report not found!"
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-test-results
+          path: target/surefire-reports/
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-coverage-report
+          path: target/site/jacoco/
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./target/site/jacoco/jacoco.xml  # Specify exact file for reliability
+          flags: Unit Tests
+          verbose: true
+          fail_ci_if_error: false  # Don't fail the job if Codecov upload fails
+
+  IntegrationTests:
+    name: Integration Tests
+    runs-on: ubuntu-22.04
+    services:
+      db:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: world
+          MYSQL_ROOT_PASSWORD: example
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -pexample"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install MySQL client
+        run: sudo apt-get install -y mysql-client
+
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL..."
+          for i in {1..30}; do
+          if mysqladmin ping -h127.0.0.1 -pexample --silent; then
+           echo "MySQL is ready!"
+           break
+          fi
+          echo "Still waiting..."
+          sleep 2
+          done
+
+      - name: Verify DB connection
+        run: |
+          mysql -h 127.0.0.1 -u root -pexample -e "SHOW DATABASES;"
+
+      - name: Build and run tests
+        env:
+          NON_INTERACTIVE: true
+        run: mvn -B verify --fail-at-end
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+
   Build:
     name: Build and Start Using docker-compose
     runs-on: ubuntu-22.04
@@ -15,13 +122,16 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'adopt'
+          distribution: 'temurin'  # Standardized for consistency
 
       - name: Build JAR
         run: mvn package -DskipTests
 
       - name: Start Docker Compose (detached)
-        run: docker compose up -d
+        run: docker compose up -d --build # Added --build to ensure latest JAR is used
+
+      - name: Wait for services to be ready  # Added to avoid connection issues
+        run: sleep 10
 
       - name: Run app for connection test
         run: docker compose exec -e NON_INTERACTIVE=true app java -jar /tmp/devops.jar
@@ -29,5 +139,15 @@ jobs:
       - name: View DB logs
         run: docker compose logs db
 
+      - name: Upload JAR to GitHub Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          files: |
+            target/*.jar
+
       - name: Stop Docker Compose
+        if: always()  # Ensure cleanup even on failure
         run: docker compose down

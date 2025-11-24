@@ -1,5 +1,9 @@
 package com.napier.sem;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -96,5 +100,38 @@ public class Language {
         }
 
         printBorder.run();
+    }
+
+    public void outputLanguage(ArrayList<Language> languages, String filename) {
+        System.out.println("Starting outputLanguage method...");
+        if (languages == null || languages.isEmpty()) {
+            System.out.println("No languages to output");
+            return;
+        }
+        System.out.println("Language list has " + languages.size() + " items. Generating Markdown...");
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("| Name | Population | Percentage of the World |\r\n");
+        sb.append("| --- | --- | --- |\r\n");
+        for (Language l : languages) {
+            if (l == null) continue;
+            sb.append(" | " + l.Language + " | " + l.Population + " | " +  l.Percentage + "|\r\n");
+        }
+        System.out.println("Markdown content generated. Attempting to write to file: /app/reports/" + filename);
+        try {
+            File reportsDir = new File("/app/reports/");  // Absolute path to match volume mount
+            if (!reportsDir.exists()) {
+                boolean dirCreated = reportsDir.mkdirs();
+                System.out.println("Reports directory created: " + dirCreated + " at " + reportsDir.getAbsolutePath());
+            }
+            File outputFile = new File("/app/reports/" + filename);  // Absolute path
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+            writer.write(sb.toString());
+            writer.close();
+            System.out.println("File written successfully to: " + outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

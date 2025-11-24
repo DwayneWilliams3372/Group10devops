@@ -1,4 +1,7 @@
 name: A workflow for my App
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ "**" ]

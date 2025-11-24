@@ -11,9 +11,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Capital {
-    private String name;
-    private String country;
-    private int population;
+    public String name;
+    public String country;
+    public int population;
 
     private Connection con;
     public Capital(Connection con) {

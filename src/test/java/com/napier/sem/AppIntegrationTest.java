@@ -78,7 +78,7 @@ public class AppIntegrationTest {
         assertNotNull(euroCapitals);
         assertFalse(euroCapitals.isEmpty());
         for (Capital c : euroCapitals) {
-            assertNotNull(c.country);
+            assertNotNull(c.name);
         }
     }
 

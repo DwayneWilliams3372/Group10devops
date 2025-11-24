@@ -10,7 +10,6 @@ public class App
      * Connection to MySQL database.
      */
     Connection con = null;
-
     /**
      * Connect to the MySQL database.
      */

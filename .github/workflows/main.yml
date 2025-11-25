@@ -28,6 +28,9 @@ jobs:
       - name: Run Unit Tests + JaCoCo
         run: mvn -B -Pci-test failsafe:integration-test failsafe:verify jacoco:report-integration
 
+      - name: List test results
+        run: ls -R target/failsafe-reports || true
+
       - name: Verify JaCoCo Report Exists
         run: |
           if [ -f target/site/jacoco-ut/jacoco.xml ]; then

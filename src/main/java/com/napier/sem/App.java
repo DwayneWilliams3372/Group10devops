@@ -36,16 +36,10 @@ public class App
                 } else {
                     Thread.sleep(30000); // 30 sec for real runtime
                 }
-                // Dynamically set the connection URL based on TEST_MODE
-                String dbUrl;
-                if ("true".equals(System.getProperty("TEST_MODE"))) {
-                    // For tests: Connect to host-exposed port
-                    dbUrl = "jdbc:mysql://localhost:33060/world?useSSL=false&allowPublicKeyRetrieval=true";
-                } else {
-                    // For production (inside Docker): Use service name
-                    dbUrl = "jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true";
-                }
+
                 // Connect to database
+                String dbUrl = System.getProperty("DB_URL",
+                        "jdbc:mysql://localhost:33060/world?useSSL=false&amp;allowPublicKeyRetrieval=true");
                 con = DriverManager.getConnection(dbUrl, "root", "example");
                 System.out.println("Successfully connected");
                 break;

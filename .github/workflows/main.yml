@@ -26,10 +26,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Run Unit Tests + JaCoCo
-        run: mvn -B -Pci-test failsafe:integration-test failsafe:verify jacoco:report-integration
-
-      - name: List test results
-        run: ls -R target/failsafe-reports || true
+        run: mvn -B test jacoco:report
 
       - name: Verify JaCoCo Report Exists
         run: |
@@ -92,17 +89,37 @@ jobs:
             sleep 2
           done
 
+      - name: Load world database
+        run: |
+          if [ -f db/world.sql ]; then
+            mysql -h127.0.0.1 -P33060 -uroot -pexample world < db/world.sql
+            echo "Database loaded successfully"
+          else
+            echo "Warning: db/world.sql not found, skipping database load"
+          fi
+
       - name: Verify DB connection
-        run: mysql -h127.0.0.1 -P33060 -uroot -pexample -e "SHOW DATABASES;"
+        run: mysql -h127.0.0.1 -P33060 -uroot -pexample -e "SHOW DATABASES; USE world; SHOW TABLES;"
 
       - name: Run Integration Tests + JaCoCo
-        run: mvn -B -Pci-test failsafe:integration-test failsafe:verify jacoco:report-integration
+        run: mvn -B -DTEST_MODE=true verify
+        env:
+          TEST_MODE: true
+
+      - name: List generated reports
+        if: always()
+        run: |
+          echo "=== Failsafe Reports ==="
+          ls -la target/failsafe-reports/ || echo "No failsafe reports"
+          echo "=== JaCoCo Reports ==="
+          ls -la target/site/ || echo "No site directory"
 
       - name: Verify JaCoCo Integration Report
         run: |
           REPORT=target/site/jacoco-it/jacoco.xml
           if [ -f "$REPORT" ]; then
             echo "Integration test JaCoCo report found at $REPORT"
+            cat "$REPORT" | head -20
           else
             echo "Integration test JaCoCo report not found!"
             ls -la target/site/
@@ -121,6 +138,7 @@ jobs:
   BuildAndDocker:
     name: Build & Docker
     runs-on: ubuntu-22.04
+    needs: [UnitTests, IntegrationTests]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -138,12 +156,20 @@ jobs:
         run: docker compose up -d --build
 
       - name: Wait for services
-        run: sleep 10
+        run: sleep 15
+
+      - name: Check service status
+        run: docker compose ps
 
       - name: Run app in Docker (connection test)
         run: docker compose exec -e NON_INTERACTIVE=true app java -jar /tmp/devops.jar
 
+      - name: View App logs
+        if: always()
+        run: docker compose logs app
+
       - name: View DB logs
+        if: always()
         run: docker compose logs db
 
       - name: Upload JAR to GitHub Release

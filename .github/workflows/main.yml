@@ -26,7 +26,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Run Unit Tests + JaCoCo
-        run: mvn -B clean test jacoco:report
+        run: mvn -B -Pci-test failsafe:integration-test failsafe:verify jacoco:report-integration
 
       - name: Verify JaCoCo Report Exists
         run: |

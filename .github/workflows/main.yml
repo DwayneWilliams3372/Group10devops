@@ -1,4 +1,5 @@
-name: A workflow for my App
+name: Build, Test & Coverage
+
 permissions:
   contents: write
 
@@ -10,7 +11,7 @@ on:
 
 jobs:
   UnitTests:
-    name: Unit Testing
+    name: Unit Tests
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
@@ -22,22 +23,29 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'  # Standardized for consistency
+          distribution: 'temurin'
 
-      - name: Run Unit Tests + JaCoCo Coverage
+      - name: Run Unit Tests + JaCoCo
         run: mvn -B clean test jacoco:report
 
-      - name: Verify JaCoCo Report Exists  # Added for debugging coverage issues
-        run: ls -la target/site/jacoco/ || echo "JaCoCo report not found!"
+      - name: Verify JaCoCo Report Exists
+        run: |
+          if [ -f target/site/jacoco/jacoco.xml ]; then
+            echo "Unit test JaCoCo report found"
+          else
+            echo "Unit test JaCoCo report not found!"
+            ls -la target/site/
+            exit 1
+          fi
 
-      - name: Upload Coverage to Codecov
+      - name: Upload Unit Coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./target/site/jacoco/jacoco.xml  # Specify exact file for reliability
+          files: target/site/jacoco/jacoco.xml
           flags: Unit Tests
           verbose: true
-          fail_ci_if_error: false  # Don't fail the job if Codecov upload fails
+          fail_ci_if_error: false
 
   IntegrationTests:
     name: Integration Tests
@@ -82,24 +90,23 @@ jobs:
           done
 
       - name: Verify DB connection
-        run: mysql -h 127.0.0.1 -u root -pexample -e "SHOW DATABASES;"
+        run: mysql -h127.0.0.1 -uroot -pexample -e "SHOW DATABASES;"
 
-      - name: Run integration tests + JaCoCo
+      - name: Run Integration Tests + JaCoCo
         run: mvn -B failsafe:integration-test failsafe:verify jacoco:report-integration
 
-      - name: Check JaCoCo Integration Report
+      - name: Verify JaCoCo Integration Report
         run: |
           REPORT=target/site/jacoco/jacoco.xml
           if [ -f "$REPORT" ]; then
-            echo "JaCoCo report found at $REPORT"
-            head -20 "$REPORT"
+            echo "Integration test JaCoCo report found at $REPORT"
           else
-            echo "JaCoCo report not found!"
+            echo "Integration test JaCoCo report not found!"
             ls -la target/site/
             exit 1
           fi
 
-      - name: Upload coverage to Codecov
+      - name: Upload Integration Coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -108,45 +115,42 @@ jobs:
           verbose: true
           fail_ci_if_error: true
 
-  Build:
-    name: Build and Start Using docker-compose
+  BuildAndDocker:
+    name: Build & Docker
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'  # Standardized for consistency
+          distribution: 'temurin'
 
       - name: Build JAR
         run: mvn package -DskipTests
 
       - name: Start Docker Compose (detached)
-        run: docker compose up -d --build # Added --build to ensure latest JAR is used
+        run: docker compose up -d --build
 
-      - name: Wait for services to be ready  # Added to avoid connection issues
+      - name: Wait for services
         run: sleep 10
 
-      - name: Run app for connection test
+      - name: Run app in Docker (connection test)
         run: docker compose exec -e NON_INTERACTIVE=true app java -jar /tmp/devops.jar
 
       - name: View DB logs
         run: docker compose logs db
 
       - name: Upload JAR to GitHub Release
-        uses: "marvinpinto/action-automatic-releases@latest"
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: "latest"
           prerelease: false
-          files: |
-            target/*.jar
+          files: target/*.jar
 
       - name: Stop Docker Compose
-        if: always()  # Ensure cleanup even on failure
+        if: always()
         run: docker compose down

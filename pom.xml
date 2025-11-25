@@ -13,6 +13,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>ci-test</id>
+            <properties>
+                <db.url>jdbc:mysql://127.0.0.1:33060/world?useSSL=false&amp;allowPublicKeyRetrieval=true</db.url>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
         <!-- MySQL Connector -->
         <dependency>

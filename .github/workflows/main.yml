@@ -87,26 +87,23 @@ jobs:
       - name: Run integration tests + JaCoCo
         run: mvn -B failsafe:integration-test failsafe:verify jacoco:report-integration
 
-      - name: Locate JaCoCo Integration Report
+      - name: Check JaCoCo Integration Report
         run: |
-          if [ -f target/site/jacoco/jacoco.xml ]; then
-            echo "JaCoCo report found at target/site/jacoco/jacoco.xml"
-          elif [ -f target/site/jacoco-it/jacoco.xml ]; then
-            echo "JaCoCo report found at target/site/jacoco-it/jacoco.xml"
+          REPORT=target/site/jacoco/jacoco.xml
+          if [ -f "$REPORT" ]; then
+            echo "JaCoCo report found at $REPORT"
+            head -20 "$REPORT"
           else
-            echo "JaCoCo report not found! Listing target/site..."
-            ls -R target/site/
+            echo "JaCoCo report not found!"
+            ls -la target/site/
             exit 1
           fi
 
-      - name: Upload Integration Coverage to Codecov
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          # Point to both possible locations
-          files: |
-            target/site/jacoco/jacoco.xml
-            target/site/jacoco/jacoco.xml
+          files: target/site/jacoco/jacoco.xml
           flags: Integration Tests
           verbose: true
           fail_ci_if_error: true

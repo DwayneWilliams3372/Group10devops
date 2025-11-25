@@ -131,9 +131,6 @@ jobs:
       - name: Start Docker Compose (detached)
         run: docker compose up -d --build
 
-      - name: Wait for services
-        run: sleep 15
-
       - name: Check service status
         run: docker compose ps
 

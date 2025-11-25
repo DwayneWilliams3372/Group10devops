@@ -89,8 +89,15 @@ jobs:
           NON_INTERACTIVE: true
         run: mvn -B failsafe:integration-test failsafe:verify jacoco:report
 
-      - name: Verify JaCoCo Report Exists  # Added for debugging
-        run: ls -la target/site/jacoco/ || echo "JaCoCo report not found!"
+      - name: Check JaCoCo Report Content
+        run: |
+          if [ -f target/site/jacoco/jacoco.xml ]; then
+            echo "JaCoCo report found. Size: $(stat -c%s target/site/jacoco/jacoco.xml) bytes"
+            head -20 target/site/jacoco/jacoco.xml  # Preview first 20 lines
+          else
+            echo "JaCoCo report not found!"
+            ls -la target/site/jacoco/ || echo "Directory does not exist"
+          fi
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5  # Updated to v5 for consistency and reliability

@@ -93,19 +93,19 @@ jobs:
         run: |
           if [ -f target/site/jacoco/jacoco.xml ]; then
             echo "JaCoCo report found. Size: $(stat -c%s target/site/jacoco/jacoco.xml) bytes"
-            head -20 target/site/jacoco/jacoco.xml  # Preview first 20 lines
+            head -20 target/site/jacoco-it/jacoco.xml
           else
             echo "JaCoCo report not found!"
-            ls -la target/site/jacoco/ || echo "Directory does not exist"
+            ls -la target/site/
           fi
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5  # Updated to v5 for consistency and reliability
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./target/site/jacoco/jacoco.xml  # Specify exact file path
-          flags: Integration Tests  # Optional: Differentiate from Unit Tests
-          verbose: true  # Added for better error logging
+          files: ./target/site/jacoco/jacoco.xml
+          flags: Integration Tests
+          verbose: true
           fail_ci_if_error: true
 
   Build:

@@ -89,10 +89,10 @@ jobs:
 
       - name: Locate JaCoCo Integration Report
         run: |
-          if [ -f target/site/jacoco-it/jacoco.xml ]; then
+          if [ -f target/site/jacoco/jacoco.xml ]; then
+            echo "JaCoCo report found at target/site/jacoco/jacoco.xml"
+          elif [ -f target/site/jacoco-it/jacoco.xml ]; then
             echo "JaCoCo report found at target/site/jacoco-it/jacoco.xml"
-          elif [ -f target/site/jacoco-integration/jacoco.xml ]; then
-            echo "JaCoCo report found at target/site/jacoco-integration/jacoco.xml"
           else
             echo "JaCoCo report not found! Listing target/site..."
             ls -R target/site/
@@ -105,8 +105,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           # Point to both possible locations
           files: |
-            target/site/jacoco-it/jacoco.xml
-            target/site/jacoco-integration/jacoco.xml
+            target/site/jacoco/jacoco.xml
+            target/site/jacoco/jacoco.xml
           flags: Integration Tests
           verbose: true
           fail_ci_if_error: true

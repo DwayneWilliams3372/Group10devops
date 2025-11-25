@@ -87,12 +87,18 @@ jobs:
       - name: Build and run tests
         env:
           NON_INTERACTIVE: true
-        run: mvn -B failsafe:integration-test failsafe:verify jacoco:report  # Updated command to run Failsafe explicitly and generate coverage
+        run: mvn -B failsafe:integration-test failsafe:verify jacoco:report
+
+      - name: Verify JaCoCo Report Exists  # Added for debugging
+        run: ls -la target/site/jacoco/ || echo "JaCoCo report not found!"
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v5  # Updated to v5 for consistency and reliability
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./target/site/jacoco/jacoco.xml  # Specify exact file path
+          flags: Integration Tests  # Optional: Differentiate from Unit Tests
+          verbose: true  # Added for better error logging
           fail_ci_if_error: true
 
   Build:

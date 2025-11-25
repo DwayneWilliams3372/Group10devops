@@ -55,19 +55,23 @@ jobs:
           docker run --name world -dp 33060:3306 database
           echo "Waiting for database to be ready..."
           sleep 15
-          mvn -B -DTEST_MODE=true verify -DskipTests
+          mvn -B -DTEST_MODE=true verify -Dsurefire.skip=true
           docker stop world
           docker rm world
           docker image rm database
 
       - name: Check if coverage report exists
         run: |
+          echo "Checking for coverage reports..."
+          ls -la ./target/ || true
+          ls -la ./target/site/ || true
           if [ -f ./target/site/jacoco-it/jacoco.xml ]; then
-            echo "Coverage report found"
+            echo "✓ Coverage report found"
             ls -la ./target/site/jacoco-it/
           else
-            echo "Coverage report not found!"
-            ls -la ./target/site/ || true
+            echo "✗ Coverage report not found!"
+            echo "Checking for exec file..."
+            ls -la ./target/*.exec || true
             exit 1
           fi
 
@@ -103,6 +107,7 @@ jobs:
           sleep 15
           docker compose exec -T -e NON_INTERACTIVE=true app java -jar /tmp/devops.jar
           EXIT_CODE=$?
+          echo "Application exit code: $EXIT_CODE"
           docker compose logs
           docker compose down
           exit $EXIT_CODE

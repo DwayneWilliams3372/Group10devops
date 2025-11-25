@@ -56,6 +56,8 @@ jobs:
         env:
           MYSQL_DATABASE: world
           MYSQL_ROOT_PASSWORD: example
+        ports:
+          - 33060:3306
         options: >-
           --health-cmd="mysqladmin ping -h 127.0.0.1 -pexample"
           --health-interval=10s
@@ -79,7 +81,7 @@ jobs:
         run: |
           echo "Waiting for MySQL..."
           for i in {1..30}; do
-            if mysqladmin ping -h db -pexample --silent; then
+            if mysqladmin ping -h127.0.0.1 -P33060 -pexample --silent; then
               echo "MySQL is ready!"
               break
             fi
@@ -88,10 +90,10 @@ jobs:
           done
 
       - name: Verify DB connection
-        run: mysql -h db -uroot -pexample -e "SHOW DATABASES;"
+        run: mysql -h127.0.0.1 -P33060 -uroot -pexample -e "SHOW DATABASES;"
 
       - name: Run Integration Tests + JaCoCo
-        run: mvn -B failsafe:integration-test failsafe:verify jacoco:report-integration
+        run: mvn -B -Pci-test failsafe:integration-test failsafe:verify jacoco:report-integration
 
       - name: Verify JaCoCo Integration Report
         run: |

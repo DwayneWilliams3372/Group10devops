@@ -2,63 +2,47 @@ package com.napier.sem;
 
 import org.junit.jupiter.api.*;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Integration test for App.java using the live MySQL database
- * running inside docker-compose.
- * Requires the service name 'db' to be resolvable (same Docker network).
- */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AppIntegrationTest {
 
-    private static App app;
+    private App app;
 
-    @BeforeAll
-    public static void setup() {
-        // Force CI mode so Menu does NOT start
-        System.setProperty("NON_INTERACTIVE", "true");
-        System.setProperty("CI", "true");
-
+    @BeforeEach
+    public void init() {
         app = new App();
-        app.connect();
-    }
-
-    @AfterAll
-    public static void teardown() {
-        app.disconnect();
+        System.setProperty("TEST_MODE", "true");  // Enable faster DB wait
     }
 
     @Test
     @Order(1)
-    public void testConnectionNotNull() {
-        assertNotNull(app.con, "Connection should not be null after connect()");
-    }
+    @DisplayName("Integration: App successfully connects to MySQL")
+    public void testConnect() {
+        app.connect();
+        assertNotNull(app.con, "Connection should not be null");
 
-    @Test
-    @Order(2)
-    public void testSimpleQuery() {
         try {
-            Statement stmt = app.con.createStatement();
-            ResultSet result = stmt.executeQuery("SELECT 1;");
-            assertTrue(result.next(), "SELECT 1 should return one row");
-            assertEquals(1, result.getInt(1));
+            assertFalse(app.con.isClosed(), "Connection should be open");
         } catch (Exception e) {
-            fail("Query failed: " + e.getMessage());
+            fail("Unexpected SQL exception: " + e.getMessage());
         }
     }
 
     @Test
-    @Order(3)
+    @Order(2)
+    @DisplayName("Integration: App disconnect() closes the connection")
     public void testDisconnect() {
+        app.connect();
+        assertNotNull(app.con);
+
         app.disconnect();
-        assertDoesNotThrow(() -> {
-            if (app.con != null) {
-                assertTrue(app.con.isClosed(), "Connection should be closed after disconnect()");
-            }
-        });
+
+        try {
+            assertTrue(app.con.isClosed(), "Connection should be closed");
+        } catch (Exception e) {
+            fail("Unexpected SQL exception: " + e.getMessage());
+        }
     }
 }

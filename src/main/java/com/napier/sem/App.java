@@ -31,8 +31,11 @@ public class App
             System.out.println("Connecting to database...");
             try
             {
-                // Wait a bit for db to start
-                Thread.sleep(30000);
+                if ("true".equals(System.getProperty("TEST_MODE"))) {
+                    Thread.sleep(1000);  // 1 sec for integration tests
+                } else {
+                    Thread.sleep(30000); // 30 sec for real runtime
+                }
                 // Connect to database
                 con = DriverManager.getConnection("jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true", "root", "example");
                 System.out.println("Successfully connected");

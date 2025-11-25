@@ -55,6 +55,7 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -72,38 +73,40 @@ jobs:
         run: |
           echo "Waiting for MySQL..."
           for i in {1..30}; do
-          if mysqladmin ping -h127.0.0.1 -pexample --silent; then
-           echo "MySQL is ready!"
-           break
-          fi
-          echo "Still waiting..."
-          sleep 2
+            if mysqladmin ping -h127.0.0.1 -pexample --silent; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Still waiting..."
+            sleep 2
           done
 
       - name: Verify DB connection
-        run: |
-          mysql -h 127.0.0.1 -u root -pexample -e "SHOW DATABASES;"
+        run: mysql -h 127.0.0.1 -u root -pexample -e "SHOW DATABASES;"
 
-      - name: Build and run tests
-        env:
-          NON_INTERACTIVE: true
+      - name: Run integration tests + JaCoCo
         run: mvn -B failsafe:integration-test failsafe:verify jacoco:report-integration
 
-      - name: Check JaCoCo Report Content
+      - name: Locate JaCoCo Integration Report
         run: |
-          if [ -f target/site/jacoco/jacoco.xml ]; then
-            echo "JaCoCo report found. Size: $(stat -c%s target/site/jacoco/jacoco.xml) bytes"
-            head -20 target/site/jacoco-it/jacoco.xml
+          if [ -f target/site/jacoco-it/jacoco.xml ]; then
+            echo "JaCoCo report found at target/site/jacoco-it/jacoco.xml"
+          elif [ -f target/site/jacoco-integration/jacoco.xml ]; then
+            echo "JaCoCo report found at target/site/jacoco-integration/jacoco.xml"
           else
-            echo "JaCoCo report not found!"
-            ls -la target/site/
+            echo "JaCoCo report not found! Listing target/site..."
+            ls -R target/site/
+            exit 1
           fi
 
-      - name: Upload coverage to Codecov
+      - name: Upload Integration Coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./target/site/jacoco/jacoco.xml
+          # Point to both possible locations
+          files: |
+            target/site/jacoco-it/jacoco.xml
+            target/site/jacoco-integration/jacoco.xml
           flags: Integration Tests
           verbose: true
           fail_ci_if_error: true

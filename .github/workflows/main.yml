@@ -90,7 +90,7 @@ jobs:
         run: mvn -B failsafe:integration-test failsafe:verify jacoco:report  # Updated command to run Failsafe explicitly and generate coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4  # Note: Consider updating to @v5 for consistency with UnitTests
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true

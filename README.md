@@ -31,7 +31,7 @@ See our [Code of Conduct](CODE_OF_CONDUCT.md) For team guidelines and expectatio
 
 
 ## Requirements Table
-### 32 requirements of 32 have been implemented
+### 32 requirements of 32 have been implemented, which is 100%.
 
 | ID | Name                                                                                                  | Met | Screenshot                                                       | Link                                                                                                   |
 |----|-------------------------------------------------------------------------------------------------------|-----|------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|

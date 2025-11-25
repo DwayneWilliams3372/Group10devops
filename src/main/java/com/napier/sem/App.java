@@ -37,7 +37,10 @@ public class App
                     Thread.sleep(30000); // 30 sec for real runtime
                 }
                 // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true", "root", "example");
+                String url = "jdbc:mysql://127.0.0.1:33060/world";
+                con = DriverManager.getConnection(url, "root", "example");
+
+//              con = DriverManager.getConnection("jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true", "root", "example");
                 System.out.println("Successfully connected");
                 break;
             }

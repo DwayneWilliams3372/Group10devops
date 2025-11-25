@@ -87,7 +87,7 @@ jobs:
       - name: Build and run tests
         env:
           NON_INTERACTIVE: true
-        run: mvn -B failsafe:integration-test failsafe:verify jacoco:report
+        run: mvn -B failsafe:integration-test failsafe:verify jacoco:report-integration
 
       - name: Check JaCoCo Report Content
         run: |

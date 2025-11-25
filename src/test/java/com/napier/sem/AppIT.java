@@ -6,7 +6,7 @@ import java.sql.Connection;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AppIntegrationTest {
+public class AppIT {  // Renamed from AppIntegrationTest
 
     private App app;
 

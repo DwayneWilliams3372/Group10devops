@@ -87,10 +87,10 @@ jobs:
       - name: Build and run tests
         env:
           NON_INTERACTIVE: true
-        run: mvn -B verify --fail-at-end
+        run: mvn -B failsafe:integration-test failsafe:verify jacoco:report  # Updated command to run Failsafe explicitly and generate coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v4  # Note: Consider updating to @v5 for consistency with UnitTests
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true

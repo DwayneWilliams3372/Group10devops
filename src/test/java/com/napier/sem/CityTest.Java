@@ -382,4 +382,310 @@ class CityTest {
         assertEquals("City2", cities.get(1).name);
         assertEquals("City3", cities.get(2).name);
     }
+
+    // ===== NEW TESTS ADDED FOR COMPLETE COVERAGE =====
+
+    @Test
+    void testExecuteCityQueryNoParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<City> result = city.getCities(); // Uses executeCityQuery() with no params
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteCityQueryWithStringParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<City> result = city.getCitiesContinent("Europe");
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteCityQueryWithIntParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<City> result = city.getCitiesPopulation(5);
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteCityQueryWithTwoParamsWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<City> result = city.getTopCitiesContinent("Asia", 3);
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    // Test extractCity indirectly through public methods with null values
+    @Test
+    void testExtractCityWithNullValues() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
+        when(mockResultSet.getString("Name")).thenReturn(null);
+        when(mockResultSet.getString("Country")).thenReturn(null);
+        when(mockResultSet.getString("District")).thenReturn(null);
+        when(mockResultSet.getInt("Population")).thenReturn(0);
+
+        // ACT
+        ArrayList<City> cities = city.getCities();
+
+        // ASSERT
+        assertNotNull(cities);
+        assertEquals(1, cities.size());
+        assertNull(cities.get(0).name);
+        assertNull(cities.get(0).country);
+        assertNull(cities.get(0).district);
+        assertEquals(0, cities.get(0).population);
+    }
+
+    // Test outputCities method thoroughly
+    @Test
+    void testOutputCitiesWithNullList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> city.outputCities(null, "test.md"));
+    }
+
+    @Test
+    void testOutputCitiesWithEmptyList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> city.outputCities(new ArrayList<>(), "test.md"));
+    }
+
+    @Test
+    void testOutputCitiesWithNullCityInList() {
+        // ARRANGE
+        ArrayList<City> cities = new ArrayList<>();
+        cities.add(null);
+        City validCity = new City();
+        validCity.name = "Berlin";
+        validCity.country = "Germany";
+        validCity.district = "Berlin";
+        validCity.population = 3644826;
+        cities.add(validCity);
+
+        // ACT & ASSERT - Should handle null gracefully
+        assertDoesNotThrow(() -> city.outputCities(cities, "test-null.md"));
+    }
+
+    @Test
+    void testOutputCitiesSuccess() {
+        // ARRANGE
+        ArrayList<City> cities = new ArrayList<>();
+        City city1 = new City();
+        city1.name = "Madrid";
+        city1.country = "Spain";
+        city1.district = "Madrid";
+        city1.population = 3223334;
+        cities.add(city1);
+
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> city.outputCities(cities, "success-test.md"));
+    }
+
+    @Test
+    void testOutputCitiesIOException() {
+        // ARRANGE
+        ArrayList<City> cities = new ArrayList<>();
+        City testCity = new City();
+        testCity.name = "Test";
+        testCity.country = "TestCountry";
+        testCity.district = "TestDistrict";
+        testCity.population = 1000000;
+        cities.add(testCity);
+
+        // This test verifies the method handles IO exceptions gracefully
+        assertDoesNotThrow(() -> city.outputCities(cities, "/invalid/path/test.md"));
+    }
+
+    // Test SQLException for all query methods
+    @Test
+    void testGetCitiesCountrySQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<City> cities = city.getCitiesCountry("United Kingdom");
+
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+    @Test
+    void testGetCitiesDistrictSQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<City> cities = city.getCitiesDistrict("California");
+
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+    @Test
+    void testGetTopCitiesRegionSQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<City> cities = city.getTopCitiesRegion("Western Europe", 5);
+
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+    @Test
+    void testGetTopCitiesCountrySQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<City> cities = city.getTopCitiesCountry("France", 3);
+
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+    @Test
+    void testGetTopCitiesDistrictSQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<City> cities = city.getTopCitiesDistrict("Texas", 2);
+
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+    // Test edge cases for population limits
+    @Test
+    void testGetCitiesPopulationWithZero() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false); // No results for zero limit
+
+        // ACT
+        ArrayList<City> cities = city.getCitiesPopulation(0);
+
+        // ASSERT
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+        verify(mockPreparedStatement).setInt(1, 0);
+    }
+
+    @Test
+    void testGetCitiesPopulationWithNegative() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false); // No results for negative limit
+
+        // ACT
+        ArrayList<City> cities = city.getCitiesPopulation(-1);
+
+        // ASSERT
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+        verify(mockPreparedStatement).setInt(1, -1);
+    }
+
+    // Test printCities with various data scenarios
+    @Test
+    void testPrintCitiesWithVeryLongNames() {
+        // ARRANGE
+        ArrayList<City> cities = new ArrayList<>();
+        City longCity = new City();
+        longCity.name = "Very Long City Name That Exceeds Normal Length";
+        longCity.country = "Country With Long Name Too";
+        longCity.district = "Extremely Long District Name Here";
+        longCity.population = 1234567890; // Large number
+        cities.add(longCity);
+
+        // ACT & ASSERT - Should handle formatting without exceptions
+        assertDoesNotThrow(() -> city.printCities(cities));
+    }
+
+    // Test all two-parameter methods with edge cases
+    @Test
+    void testGetTopCitiesContinentWithZeroLimit() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<City> cities = city.getTopCitiesContinent("Europe", 0);
+
+        // ASSERT
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+        verify(mockPreparedStatement).setString(1, "Europe");
+        verify(mockPreparedStatement).setInt(2, 0);
+    }
+
+    @Test
+    void testGetTopCitiesRegionWithNegativeLimit() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<City> cities = city.getTopCitiesRegion("Asia", -5);
+
+        // ASSERT
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+        verify(mockPreparedStatement).setString(1, "Asia");
+        verify(mockPreparedStatement).setInt(2, -5);
+    }
+
+    @Test
+    void testGetTopCitiesCountryWithZeroLimit() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<City> cities = city.getTopCitiesCountry("Germany", 0);
+
+        // ASSERT
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+        verify(mockPreparedStatement).setString(1, "Germany");
+        verify(mockPreparedStatement).setInt(2, 0);
+    }
+
+    @Test
+    void testGetTopCitiesDistrictWithNegativeLimit() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<City> cities = city.getTopCitiesDistrict("California", -3);
+
+        // ASSERT
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+        verify(mockPreparedStatement).setString(1, "California");
+        verify(mockPreparedStatement).setInt(2, -3);
+    }
 }

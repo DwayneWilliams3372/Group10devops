@@ -384,4 +384,411 @@ class CountryTest {
         assertEquals(Integer.MAX_VALUE, countries.get(0).population);
         verify(mockPreparedStatement).executeQuery();
     }
+
+    // ===== NEW TESTS ADDED FOR COMPLETE COVERAGE =====
+
+    @Test
+    void testExecuteCountryQueryNoParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Country> result = country.getAllCountriesByPopulation(); // Uses executeCountryQuery() with no params
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteCountryQueryWithStringParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Country> result = country.getCountriesByContinent("Europe");
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteCountryQueryWithIntParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Country> result = country.getTopCountriesInWorld(5);
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteCountryQueryWithTwoParamsWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Country> result = country.getTopCountriesInContinent("Asia", 3);
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    // Test extractCountry indirectly through public methods with null values
+    @Test
+    void testExtractCountryWithNullValues() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
+        when(mockResultSet.getString("Code")).thenReturn(null);
+        when(mockResultSet.getString("Name")).thenReturn(null);
+        when(mockResultSet.getString("Continent")).thenReturn(null);
+        when(mockResultSet.getString("Region")).thenReturn(null);
+        when(mockResultSet.getInt("Population")).thenReturn(0);
+        when(mockResultSet.getString("Capital")).thenReturn(null);
+
+        // ACT
+        ArrayList<Country> countries = country.getAllCountriesByPopulation();
+
+        // ASSERT
+        assertNotNull(countries);
+        assertEquals(1, countries.size());
+        assertNull(countries.get(0).code);
+        assertNull(countries.get(0).name);
+        assertNull(countries.get(0).continent);
+        assertNull(countries.get(0).region);
+        assertEquals(0, countries.get(0).population);
+        assertNull(countries.get(0).capital);
+    }
+
+    // Test outputCountries method thoroughly
+    @Test
+    void testOutputCountriesWithNullList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> country.outputCountries(null, "test.md"));
+    }
+
+    @Test
+    void testOutputCountriesWithEmptyList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> country.outputCountries(new ArrayList<>(), "test.md"));
+    }
+
+    @Test
+    void testOutputCountriesWithNullCountryInList() {
+        // ARRANGE
+        ArrayList<Country> countries = new ArrayList<>();
+        countries.add(null);
+        Country validCountry = new Country();
+        validCountry.code = "DEU";
+        validCountry.name = "Germany";
+        validCountry.continent = "Europe";
+        validCountry.region = "Western Europe";
+        validCountry.population = 83149300;
+        validCountry.capital = "Berlin";
+        countries.add(validCountry);
+
+        // ACT & ASSERT - Should handle null gracefully
+        assertDoesNotThrow(() -> country.outputCountries(countries, "test-null.md"));
+    }
+
+    @Test
+    void testOutputCountriesSuccess() {
+        // ARRANGE
+        ArrayList<Country> countries = new ArrayList<>();
+        Country country1 = new Country();
+        country1.code = "FRA";
+        country1.name = "France";
+        country1.continent = "Europe";
+        country1.region = "Western Europe";
+        country1.population = 67391582;
+        country1.capital = "Paris";
+        countries.add(country1);
+
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> country.outputCountries(countries, "success-test.md"));
+    }
+
+    @Test
+    void testOutputCountriesIOException() {
+        // ARRANGE
+        ArrayList<Country> countries = new ArrayList<>();
+        Country testCountry = new Country();
+        testCountry.code = "TEST";
+        testCountry.name = "Test Country";
+        testCountry.continent = "Test Continent";
+        testCountry.region = "Test Region";
+        testCountry.population = 1000000;
+        testCountry.capital = "Test Capital";
+        countries.add(testCountry);
+
+        // This test verifies the method handles IO exceptions gracefully
+        assertDoesNotThrow(() -> country.outputCountries(countries, "/invalid/path/test.md"));
+    }
+
+    // Test SQLException for all query methods
+    @Test
+    void testGetCountriesByRegionSQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<Country> countries = country.getCountriesByRegion("Western Europe");
+
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+    }
+
+    @Test
+    void testGetTopCountriesInRegionSQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<Country> countries = country.getTopCountriesInRegion("Western Europe", 5);
+
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+    }
+
+    // Test edge cases for population limits
+    @Test
+    void testGetTopCountriesInWorldWithNegativeLimit() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false); // No results for negative limit
+
+        // ACT
+        ArrayList<Country> countries = country.getTopCountriesInWorld(-1);
+
+        // ASSERT
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+        verify(mockPreparedStatement).setInt(1, -1);
+    }
+
+    // Test printCountries with various data scenarios
+    @Test
+    void testPrintCountriesWithVeryLongNames() {
+        // ARRANGE
+        ArrayList<Country> countries = new ArrayList<>();
+        Country longCountry = new Country();
+        longCountry.code = "LONG";
+        longCountry.name = "Very Long Country Name That Exceeds Normal Length";
+        longCountry.continent = "Continent With Extremely Long Name Too";
+        longCountry.region = "Extremely Long Region Name Here";
+        longCountry.population = 1234567890; // Large number
+        longCountry.capital = "Very Long Capital City Name That Is Also Extremely Long";
+        countries.add(longCountry);
+
+        // ACT & ASSERT - Should handle formatting without exceptions
+        assertDoesNotThrow(() -> country.printCountries(countries));
+    }
+
+    // Test all two-parameter methods with edge cases
+    @Test
+    void testGetTopCountriesInContinentWithZeroLimit() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Country> countries = country.getTopCountriesInContinent("Europe", 0);
+
+        // ASSERT
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+        verify(mockPreparedStatement).setString(1, "Europe");
+        verify(mockPreparedStatement).setInt(2, 0);
+    }
+
+    @Test
+    void testGetTopCountriesInRegionWithNegativeLimit() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Country> countries = country.getTopCountriesInRegion("Asia", -5);
+
+        // ASSERT
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+        verify(mockPreparedStatement).setString(1, "Asia");
+        verify(mockPreparedStatement).setInt(2, -5);
+    }
+
+    // Test with empty string parameters
+    @Test
+    void testGetCountriesByContinentWithEmptyString() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Country> countries = country.getCountriesByContinent("");
+
+        // ASSERT
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+        verify(mockPreparedStatement).setString(1, "");
+    }
+
+    @Test
+    void testGetCountriesByRegionWithEmptyString() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Country> countries = country.getCountriesByRegion("");
+
+        // ASSERT
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+        verify(mockPreparedStatement).setString(1, "");
+    }
+
+    // Test with null parameters (should handle gracefully or throw appropriate exception)
+    @Test
+    void testGetCountriesByContinentWithNull() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Country> countries = country.getCountriesByContinent(null);
+
+        // ASSERT
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+        verify(mockPreparedStatement).setString(1, null);
+    }
+
+    @Test
+    void testGetCountriesByRegionWithNull() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Country> countries = country.getCountriesByRegion(null);
+
+        // ASSERT
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+        verify(mockPreparedStatement).setString(1, null);
+    }
+
+    // Test population formatting in print method
+    @Test
+    void testPrintCountriesWithZeroPopulation() {
+        // ARRANGE
+        ArrayList<Country> countries = new ArrayList<>();
+        Country zeroPopCountry = new Country();
+        zeroPopCountry.code = "ZERO";
+        zeroPopCountry.name = "Zero Population Country";
+        zeroPopCountry.continent = "Test Continent";
+        zeroPopCountry.region = "Test Region";
+        zeroPopCountry.population = 0;
+        zeroPopCountry.capital = "Test Capital";
+        countries.add(zeroPopCountry);
+
+        // ACT & ASSERT - Should handle zero population without exceptions
+        assertDoesNotThrow(() -> country.printCountries(countries));
+    }
+
+    // Test outputCountries with special characters
+    @Test
+    void testOutputCountriesWithSpecialCharacters() {
+        // ARRANGE
+        ArrayList<Country> countries = new ArrayList<>();
+        Country specialCountry = new Country();
+        specialCountry.code = "SP&L";
+        specialCountry.name = "Country & Name";
+        specialCountry.continent = "Continent/Region";
+        specialCountry.region = "Region|Test";
+        specialCountry.population = 1000000;
+        specialCountry.capital = "Capital-City";
+        countries.add(specialCountry);
+
+        // ACT & ASSERT - Should handle special characters without exceptions
+        assertDoesNotThrow(() -> country.outputCountries(countries, "special-chars.md"));
+    }
+
+    // Test printCountries with mixed data including nulls
+    @Test
+    void testPrintCountriesWithMixedData() {
+        // ARRANGE
+        ArrayList<Country> countries = new ArrayList<>();
+
+        // Country with normal data
+        Country normalCountry = new Country();
+        normalCountry.code = "USA";
+        normalCountry.name = "United States";
+        normalCountry.continent = "North America";
+        normalCountry.region = "North America";
+        normalCountry.population = 331002651;
+        normalCountry.capital = "Washington, D.C.";
+        countries.add(normalCountry);
+
+        // Country with very small population
+        Country smallCountry = new Country();
+        smallCountry.code = "VAT";
+        smallCountry.name = "Vatican City";
+        smallCountry.continent = "Europe";
+        smallCountry.region = "Southern Europe";
+        smallCountry.population = 825;
+        smallCountry.capital = "Vatican City";
+        countries.add(smallCountry);
+
+        // ACT & ASSERT - Should handle mixed data without exceptions
+        assertDoesNotThrow(() -> country.printCountries(countries));
+    }
+
+    // Test outputCountries with multiple countries
+    @Test
+    void testOutputCountriesWithMultipleCountries() {
+        // ARRANGE
+        ArrayList<Country> countries = new ArrayList<>();
+
+        Country country1 = new Country();
+        country1.code = "CAN";
+        country1.name = "Canada";
+        country1.continent = "North America";
+        country1.region = "North America";
+        country1.population = 37742154;
+        country1.capital = "Ottawa";
+        countries.add(country1);
+
+        Country country2 = new Country();
+        country2.code = "MEX";
+        country2.name = "Mexico";
+        country2.continent = "North America";
+        country2.region = "Central America";
+        country2.population = 128932753;
+        country2.capital = "Mexico City";
+        countries.add(country2);
+
+        Country country3 = new Country();
+        country3.code = "JPN";
+        country3.name = "Japan";
+        country3.continent = "Asia";
+        country3.region = "Eastern Asia";
+        country3.population = 126476461;
+        country3.capital = "Tokyo";
+        countries.add(country3);
+
+        // ACT & ASSERT - Should handle multiple countries without exceptions
+        assertDoesNotThrow(() -> country.outputCountries(countries, "multiple-countries.md"));
+    }
 }

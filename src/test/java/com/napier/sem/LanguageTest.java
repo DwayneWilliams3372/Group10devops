@@ -69,7 +69,9 @@ class LanguageTest {
         Language firstLanguage = languages.get(0);
         assertEquals("Chinese", getPrivateField(firstLanguage, "Language"));
         assertEquals(1200000000L, getPrivateField(firstLanguage, "Population"));
-        assertEquals(16.5, (Double) getPrivateField(firstLanguage, "Percentage"), 0.001);
+        Double percentage = (Double) getPrivateField(firstLanguage, "Percentage");
+        assertNotNull(percentage);
+        assertEquals(16.5, percentage, 0.001);
 
         verify(mockConnection).prepareStatement(anyString());
         verify(mockPreparedStatement).executeQuery();
@@ -96,11 +98,17 @@ class LanguageTest {
         assertEquals("Arabic", getPrivateField(languages.get(4), "Language"));
 
         // Verify ordering by population (descending)
-        long pop1 = (Long) getPrivateField(languages.get(0), "Population");
-        long pop2 = (Long) getPrivateField(languages.get(1), "Population");
-        long pop3 = (Long) getPrivateField(languages.get(2), "Population");
-        long pop4 = (Long) getPrivateField(languages.get(3), "Population");
-        long pop5 = (Long) getPrivateField(languages.get(4), "Population");
+        Long pop1 = (Long) getPrivateField(languages.get(0), "Population");
+        Long pop2 = (Long) getPrivateField(languages.get(1), "Population");
+        Long pop3 = (Long) getPrivateField(languages.get(2), "Population");
+        Long pop4 = (Long) getPrivateField(languages.get(3), "Population");
+        Long pop5 = (Long) getPrivateField(languages.get(4), "Population");
+
+        assertNotNull(pop1);
+        assertNotNull(pop2);
+        assertNotNull(pop3);
+        assertNotNull(pop4);
+        assertNotNull(pop5);
 
         assertTrue(pop1 >= pop2);
         assertTrue(pop2 >= pop3);
@@ -120,7 +128,9 @@ class LanguageTest {
         assertNotNull(languages);
         assertEquals(1, languages.size());
         assertEquals(Long.MAX_VALUE, getPrivateField(languages.get(0), "Population"));
-        assertEquals(99.99, (Double) getPrivateField(languages.get(0), "Percentage"), 0.001);
+        Double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
+        assertNotNull(percentage);
+        assertEquals(99.99, percentage, 0.001);
     }
 
     @Test
@@ -134,7 +144,9 @@ class LanguageTest {
 
         assertNotNull(languages);
         assertEquals(1, languages.size());
-        assertEquals(13.75, (Double) getPrivateField(languages.get(0), "Percentage"), 0.001);
+        Double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
+        assertNotNull(percentage);
+        assertEquals(13.75, percentage, 0.001);
     }
 
     @Test
@@ -149,7 +161,7 @@ class LanguageTest {
     }
 
     @Test
-    void testPrintLanguagesWithData() throws Exception {
+    void testPrintLanguagesWithData() {
         ArrayList<Language> languages = new ArrayList<>();
 
         // Create test language data using reflection
@@ -169,7 +181,7 @@ class LanguageTest {
     }
 
     @Test
-    void testPrintLanguagesWithLongNames() throws Exception {
+    void testPrintLanguagesWithLongNames() {
         ArrayList<Language> languages = new ArrayList<>();
 
         Language lang = new Language();
@@ -205,7 +217,9 @@ class LanguageTest {
 
         assertEquals("Arabic", getPrivateField(languages.get(0), "Language"));
         assertEquals(300000000L, getPrivateField(languages.get(0), "Population"));
-        assertEquals(4.1, (Double) getPrivateField(languages.get(0), "Percentage"), 0.001);
+        Double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
+        assertNotNull(percentage);
+        assertEquals(4.1, percentage, 0.001);
     }
 
     @Test
@@ -228,11 +242,13 @@ class LanguageTest {
         ArrayList<Language> languages = language.getLanguages();
 
         String langName = (String) getPrivateField(languages.get(0), "Language");
-        long population = (Long) getPrivateField(languages.get(0), "Population");
-        double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
+        Long population = (Long) getPrivateField(languages.get(0), "Population");
+        Double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
 
         assertEquals("Japanese", langName);
-        assertEquals(125000000L, population);
+        assertNotNull(population);
+        assertEquals(125000000L, population.longValue());
+        assertNotNull(percentage);
         assertEquals(1.7, percentage, 0.001);
 
         // Verify the data makes sense
@@ -252,12 +268,14 @@ class LanguageTest {
         ArrayList<Language> languages = language.getLanguages();
 
         assertEquals(2, languages.size());
-        long pop1 = (Long) getPrivateField(languages.get(0), "Population");
-        long pop2 = (Long) getPrivateField(languages.get(1), "Population");
+        Long pop1 = (Long) getPrivateField(languages.get(0), "Population");
+        Long pop2 = (Long) getPrivateField(languages.get(1), "Population");
 
+        assertNotNull(pop1);
+        assertNotNull(pop2);
         assertTrue(pop1 >= pop2);
-        assertEquals(900000000L, pop1);
-        assertEquals(400000000L, pop2);
+        assertEquals(900000000L, pop1.longValue());
+        assertEquals(400000000L, pop2.longValue());
     }
 
     // Test for zero percentage edge case
@@ -272,7 +290,9 @@ class LanguageTest {
 
         assertNotNull(languages);
         assertEquals(1, languages.size());
-        assertEquals(0.0, (Double) getPrivateField(languages.get(0), "Percentage"), 0.001);
+        Double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
+        assertNotNull(percentage);
+        assertEquals(0.0, percentage, 0.001);
     }
 
     // ===== NEW TESTS ADDED FOR COMPLETE COVERAGE =====
@@ -307,7 +327,9 @@ class LanguageTest {
         assertEquals(1, languages.size());
         assertNull(getPrivateField(languages.get(0), "Language"));
         assertEquals(0L, getPrivateField(languages.get(0), "Population"));
-        assertEquals(0.0, (Double) getPrivateField(languages.get(0), "Percentage"), 0.001);
+        Double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
+        assertNotNull(percentage);
+        assertEquals(0.0, percentage, 0.001);
     }
 
     // Test outputLanguage method thoroughly
@@ -324,7 +346,7 @@ class LanguageTest {
     }
 
     @Test
-    void testOutputLanguageWithNullLanguageInList() throws Exception {
+    void testOutputLanguageWithNullLanguageInList() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         languages.add(null);
@@ -339,7 +361,7 @@ class LanguageTest {
     }
 
     @Test
-    void testOutputLanguageSuccess() throws Exception {
+    void testOutputLanguageSuccess() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         Language lang1 = new Language();
@@ -353,7 +375,7 @@ class LanguageTest {
     }
 
     @Test
-    void testOutputLanguageIOException() throws Exception {
+    void testOutputLanguageIOException() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         Language testLanguage = new Language();
@@ -368,7 +390,7 @@ class LanguageTest {
 
     // Test printLanguages with various data scenarios
     @Test
-    void testPrintLanguagesWithZeroPopulation() throws Exception {
+    void testPrintLanguagesWithZeroPopulation() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         Language zeroPopLanguage = new Language();
@@ -382,7 +404,7 @@ class LanguageTest {
     }
 
     @Test
-    void testPrintLanguagesWithVeryLargePopulation() throws Exception {
+    void testPrintLanguagesWithVeryLargePopulation() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         Language largePopLanguage = new Language();
@@ -396,7 +418,7 @@ class LanguageTest {
     }
 
     @Test
-    void testPrintLanguagesWithDecimalPercentages() throws Exception {
+    void testPrintLanguagesWithDecimalPercentages() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         Language preciseLanguage = new Language();
@@ -411,7 +433,7 @@ class LanguageTest {
 
     // Test outputLanguage with special characters
     @Test
-    void testOutputLanguageWithSpecialCharacters() throws Exception {
+    void testOutputLanguageWithSpecialCharacters() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         Language specialLanguage = new Language();
@@ -426,7 +448,7 @@ class LanguageTest {
 
     // Test outputLanguage with multiple languages
     @Test
-    void testOutputLanguageWithMultipleLanguages() throws Exception {
+    void testOutputLanguageWithMultipleLanguages() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
 
@@ -464,7 +486,9 @@ class LanguageTest {
 
         assertNotNull(languages);
         assertEquals(1, languages.size());
-        assertEquals(0.0001, (Double) getPrivateField(languages.get(0), "Percentage"), 0.00001);
+        Double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
+        assertNotNull(percentage);
+        assertEquals(0.0001, percentage, 0.00001);
     }
 
     @Test
@@ -478,12 +502,14 @@ class LanguageTest {
 
         assertNotNull(languages);
         assertEquals(1, languages.size());
-        assertEquals(19.5, (Double) getPrivateField(languages.get(0), "Percentage"), 0.001);
+        Double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
+        assertNotNull(percentage);
+        assertEquals(19.5, percentage, 0.001);
     }
 
     // Test printLanguages with mixed formatting scenarios
     @Test
-    void testPrintLanguagesWithMixedFormatting() throws Exception {
+    void testPrintLanguagesWithMixedFormatting() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
 
@@ -530,10 +556,12 @@ class LanguageTest {
         String lang1 = (String) getPrivateField(languages.get(0), "Language");
         String lang2 = (String) getPrivateField(languages.get(1), "Language");
 
-        assertTrue(lang1.equals("English") || lang1.equals("Spanish") ||
-                lang1.equals("Chinese") || lang1.equals("Hindi") || lang1.equals("Arabic"));
-        assertTrue(lang2.equals("English") || lang2.equals("Spanish") ||
-                lang2.equals("Chinese") || lang2.equals("Hindi") || lang2.equals("Arabic"));
+        assertNotNull(lang1);
+        assertNotNull(lang2);
+        assertTrue("English".equals(lang1) || "Spanish".equals(lang1) ||
+                "Chinese".equals(lang1) || "Hindi".equals(lang1) || "Arabic".equals(lang1));
+        assertTrue("English".equals(lang2) || "Spanish".equals(lang2) ||
+                "Chinese".equals(lang2) || "Hindi".equals(lang2) || "Arabic".equals(lang2));
     }
 
     // Test the SQL query structure indirectly by verifying result ordering
@@ -547,20 +575,23 @@ class LanguageTest {
         ArrayList<Language> languages = language.getLanguages();
 
         // Verify ordering is by population descending
-        long pop1 = (Long) getPrivateField(languages.get(0), "Population");
-        long pop2 = (Long) getPrivateField(languages.get(1), "Population");
-        long pop3 = (Long) getPrivateField(languages.get(2), "Population");
+        Long pop1 = (Long) getPrivateField(languages.get(0), "Population");
+        Long pop2 = (Long) getPrivateField(languages.get(1), "Population");
+        Long pop3 = (Long) getPrivateField(languages.get(2), "Population");
 
+        assertNotNull(pop1);
+        assertNotNull(pop2);
+        assertNotNull(pop3);
         assertTrue(pop1 >= pop2);
         assertTrue(pop2 >= pop3);
-        assertEquals(1200000000L, pop1);
-        assertEquals(1000000000L, pop2);
-        assertEquals(600000000L, pop3);
+        assertEquals(1200000000L, pop1.longValue());
+        assertEquals(1000000000L, pop2.longValue());
+        assertEquals(600000000L, pop3.longValue());
     }
 
     // Test outputLanguage with exact field matching
     @Test
-    void testOutputLanguageFieldMatching() throws Exception {
+    void testOutputLanguageFieldMatching() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         Language testLang = new Language();
@@ -575,7 +606,7 @@ class LanguageTest {
 
     // Test printLanguages with exactly one language
     @Test
-    void testPrintLanguagesWithSingleLanguage() throws Exception {
+    void testPrintLanguagesWithSingleLanguage() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         Language singleLang = new Language();
@@ -600,12 +631,14 @@ class LanguageTest {
 
         assertNotNull(languages);
         assertEquals(1, languages.size());
-        assertEquals(100.0, (Double) getPrivateField(languages.get(0), "Percentage"), 0.001);
+        Double percentage = (Double) getPrivateField(languages.get(0), "Percentage");
+        assertNotNull(percentage);
+        assertEquals(100.0, percentage, 0.001);
     }
 
     // Test language with very long population number formatting
     @Test
-    void testPrintLanguagesWithLongPopulationNumber() throws Exception {
+    void testPrintLanguagesWithLongPopulationNumber() {
         // ARRANGE
         ArrayList<Language> languages = new ArrayList<>();
         Language longPopLang = new Language();

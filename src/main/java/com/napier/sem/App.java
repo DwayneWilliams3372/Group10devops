@@ -31,17 +31,28 @@ public class App
             System.out.println("Connecting to database...");
             try
             {
-                // Wait a bit for db to start
-                Thread.sleep(30000);
+                if ("true".equals(System.getProperty("TEST_MODE"))) {
+                    Thread.sleep(1000);  // 1 sec for integration tests
+                } else {
+                    Thread.sleep(30000); // 30 sec for real runtime
+                }
+                // Dynamically set the connection URL based on TEST_MODE
+                String dbUrl;
+                if ("true".equals(System.getProperty("TEST_MODE"))) {
+                    // For tests: Connect to host-exposed port
+                    dbUrl = "jdbc:mysql://localhost:33060/world?useSSL=false&allowPublicKeyRetrieval=true";
+                } else {
+                    // For production (inside Docker): Use service name
+                    dbUrl = "jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true";
+                }
                 // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true", "root", "example");
+                con = DriverManager.getConnection(dbUrl, "root", "example");
                 System.out.println("Successfully connected");
                 break;
             }
             catch (SQLException sqle)
             {
-                System.out.println("Failed to connect to database attempt ");
-                System.out.println(sqle.getMessage());
+                System.out.println("Failed to connect to database attempt " + (i + 1) + ": " + sqle.getMessage());
             }
             catch (InterruptedException ie)
             {

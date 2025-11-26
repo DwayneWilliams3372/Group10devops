@@ -79,8 +79,12 @@ class PopulationTest {
         assertEquals(3700000000L, getPrivateField(asia, "totalPopulation"));
         assertEquals(1500000000L, getPrivateField(asia, "cityPopulation"));
         assertEquals(2200000000L, getPrivateField(asia, "noCityPopulation"));
-        assertEquals(40.5, (Double) getPrivateField(asia, "cityPercentage"), 0.001);
-        assertEquals(59.5, (Double) getPrivateField(asia, "noCityPercentage"), 0.001);
+        Double cityPercentage = (Double) getPrivateField(asia, "cityPercentage");
+        Double noCityPercentage = (Double) getPrivateField(asia, "noCityPercentage");
+        assertNotNull(cityPercentage);
+        assertNotNull(noCityPercentage);
+        assertEquals(40.5, cityPercentage, 0.001);
+        assertEquals(59.5, noCityPercentage, 0.001);
 
         verify(mockConnection).createStatement();
         verify(mockStatement).executeQuery(anyString());
@@ -106,8 +110,12 @@ class PopulationTest {
         assertEquals(1500000000L, getPrivateField(region, "totalPopulation"));
         assertEquals(800000000L, getPrivateField(region, "cityPopulation"));
         assertEquals(700000000L, getPrivateField(region, "noCityPopulation"));
-        assertEquals(53.3, (Double) getPrivateField(region, "cityPercentage"), 0.001);
-        assertEquals(46.7, (Double) getPrivateField(region, "noCityPercentage"), 0.001);
+        Double cityPercentage = (Double) getPrivateField(region, "cityPercentage");
+        Double noCityPercentage = (Double) getPrivateField(region, "noCityPercentage");
+        assertNotNull(cityPercentage);
+        assertNotNull(noCityPercentage);
+        assertEquals(53.3, cityPercentage, 0.001);
+        assertEquals(46.7, noCityPercentage, 0.001);
     }
 
     @Test
@@ -130,8 +138,12 @@ class PopulationTest {
         assertEquals(1300000000L, getPrivateField(country, "totalPopulation"));
         assertEquals(600000000L, getPrivateField(country, "cityPopulation"));
         assertEquals(700000000L, getPrivateField(country, "noCityPopulation"));
-        assertEquals(46.2, (Double) getPrivateField(country, "cityPercentage"), 0.001);
-        assertEquals(53.8, (Double) getPrivateField(country, "noCityPercentage"), 0.001);
+        Double cityPercentage = (Double) getPrivateField(country, "cityPercentage");
+        Double noCityPercentage = (Double) getPrivateField(country, "noCityPercentage");
+        assertNotNull(cityPercentage);
+        assertNotNull(noCityPercentage);
+        assertEquals(46.2, cityPercentage, 0.001);
+        assertEquals(53.8, noCityPercentage, 0.001);
     }
 
     @Test
@@ -266,7 +278,7 @@ class PopulationTest {
     }
 
     @Test
-    void testPrintPopulationWithData() throws Exception {
+    void testPrintPopulationWithData() {
         ArrayList<Population> populations = new ArrayList<>();
 
         Population pop = new Population();
@@ -282,7 +294,7 @@ class PopulationTest {
     }
 
     @Test
-    void testPrintSinglePopulationWithData() throws Exception {
+    void testPrintSinglePopulationWithData() {
         ArrayList<Population> populations = new ArrayList<>();
 
         Population pop = new Population();
@@ -328,10 +340,13 @@ class PopulationTest {
         assertEquals(3, populations.size());
 
         // Verify ordering by total population (descending)
-        long pop1 = (Long) getPrivateField(populations.get(0), "totalPopulation");
-        long pop2 = (Long) getPrivateField(populations.get(1), "totalPopulation");
-        long pop3 = (Long) getPrivateField(populations.get(2), "totalPopulation");
+        Long pop1 = (Long) getPrivateField(populations.get(0), "totalPopulation");
+        Long pop2 = (Long) getPrivateField(populations.get(1), "totalPopulation");
+        Long pop3 = (Long) getPrivateField(populations.get(2), "totalPopulation");
 
+        assertNotNull(pop1);
+        assertNotNull(pop2);
+        assertNotNull(pop3);
         assertTrue(pop1 >= pop2);
         assertTrue(pop2 >= pop3);
         assertEquals(4500000000L, pop1);
@@ -352,13 +367,18 @@ class PopulationTest {
         ArrayList<Population> populations = population.regionPopulation();
 
         Population region = populations.get(0);
-        long totalPop = (Long) getPrivateField(region, "totalPopulation");
-        long cityPop = (Long) getPrivateField(region, "cityPopulation");
-        long noCityPop = (Long) getPrivateField(region, "noCityPopulation");
-        double cityPct = (Double) getPrivateField(region, "cityPercentage");
-        double noCityPct = (Double) getPrivateField(region, "noCityPercentage");
+        Long totalPop = (Long) getPrivateField(region, "totalPopulation");
+        Long cityPop = (Long) getPrivateField(region, "cityPopulation");
+        Long noCityPop = (Long) getPrivateField(region, "noCityPopulation");
+        Double cityPct = (Double) getPrivateField(region, "cityPercentage");
+        Double noCityPct = (Double) getPrivateField(region, "noCityPercentage");
 
         // Verify data consistency
+        assertNotNull(totalPop);
+        assertNotNull(cityPop);
+        assertNotNull(noCityPop);
+        assertNotNull(cityPct);
+        assertNotNull(noCityPct);
         assertEquals(totalPop, cityPop + noCityPop);
         assertTrue(cityPct >= 0 && cityPct <= 100);
         assertTrue(noCityPct >= 0 && noCityPct <= 100);
@@ -382,8 +402,443 @@ class PopulationTest {
         // Other fields should be 0/default for single population queries
         assertEquals(0L, getPrivateField(country, "cityPopulation"));
         assertEquals(0L, getPrivateField(country, "noCityPopulation"));
-        assertEquals(0.0, (Double) getPrivateField(country, "cityPercentage"), 0.001);
-        assertEquals(0.0, (Double) getPrivateField(country, "noCityPercentage"), 0.001);
+        Double cityPercentage = (Double) getPrivateField(country, "cityPercentage");
+        Double noCityPercentage = (Double) getPrivateField(country, "noCityPercentage");
+        assertNotNull(cityPercentage);
+        assertNotNull(noCityPercentage);
+        assertEquals(0.0, cityPercentage, 0.001);
+        assertEquals(0.0, noCityPercentage, 0.001);
+    }
+
+    // ===== NEW TESTS ADDED FOR COMPLETE COVERAGE =====
+
+    @Test
+    void testGetPopulationWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.createStatement()).thenThrow(new SQLException("Database error"));
+
+        // ACT
+        ArrayList<Population> populations = population.continentPopulation();
+
+        // ASSERT
+        assertNotNull(populations);
+        assertTrue(populations.isEmpty());
+    }
+
+    @Test
+    void testExecuteQueryNoParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Population> result = population.populationWorld();
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteQueryWithStringParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Population> result = population.populationContinent("Asia");
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    // Test extractPopulations indirectly through public methods with null values
+    @Test
+    void testExtractPopulationsWithNullValues() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
+        when(mockResultSet.getString("Name")).thenReturn(null);
+        when(mockResultSet.getLong("Population")).thenReturn(0L);
+
+        // ACT
+        ArrayList<Population> populations = population.populationWorld();
+
+        // ASSERT
+        assertNotNull(populations);
+        assertEquals(1, populations.size());
+        assertNull(getPrivateField(populations.get(0), "Name"));
+        assertEquals(0L, getPrivateField(populations.get(0), "totalPopulation"));
+        assertEquals(0L, getPrivateField(populations.get(0), "cityPopulation"));
+        assertEquals(0L, getPrivateField(populations.get(0), "noCityPopulation"));
+        Double cityPercentage = (Double) getPrivateField(populations.get(0), "cityPercentage");
+        Double noCityPercentage = (Double) getPrivateField(populations.get(0), "noCityPercentage");
+        assertNotNull(cityPercentage);
+        assertNotNull(noCityPercentage);
+        assertEquals(0.0, cityPercentage, 0.001);
+        assertEquals(0.0, noCityPercentage, 0.001);
+    }
+
+    // Test outputPopulation method thoroughly
+    @Test
+    void testOutputPopulationWithNullList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> population.outputPopulation(null, "test.md"));
+    }
+
+    @Test
+    void testOutputPopulationWithEmptyList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> population.outputPopulation(new ArrayList<>(), "test.md"));
+    }
+
+    @Test
+    void testOutputPopulationWithNullPopulationInList() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        populations.add(null);
+        Population validPopulation = new Population();
+        setPrivateField(validPopulation, "Name", "Europe");
+        setPrivateField(validPopulation, "totalPopulation", 750000000L);
+        setPrivateField(validPopulation, "cityPopulation", 500000000L);
+        setPrivateField(validPopulation, "noCityPopulation", 250000000L);
+        setPrivateField(validPopulation, "cityPercentage", 66.7);
+        setPrivateField(validPopulation, "noCityPercentage", 33.3);
+        populations.add(validPopulation);
+
+        // ACT & ASSERT - Should handle null gracefully
+        assertDoesNotThrow(() -> population.outputPopulation(populations, "test-null.md"));
+    }
+
+    @Test
+    void testOutputPopulationSuccess() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population pop1 = new Population();
+        setPrivateField(pop1, "Name", "Asia");
+        setPrivateField(pop1, "totalPopulation", 4500000000L);
+        setPrivateField(pop1, "cityPopulation", 1800000000L);
+        setPrivateField(pop1, "noCityPopulation", 2700000000L);
+        setPrivateField(pop1, "cityPercentage", 40.0);
+        setPrivateField(pop1, "noCityPercentage", 60.0);
+        populations.add(pop1);
+
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> population.outputPopulation(populations, "success-test.md"));
+    }
+
+    @Test
+    void testOutputPopulationIOException() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population testPopulation = new Population();
+        setPrivateField(testPopulation, "Name", "Test Continent");
+        setPrivateField(testPopulation, "totalPopulation", 1000000000L);
+        setPrivateField(testPopulation, "cityPopulation", 400000000L);
+        setPrivateField(testPopulation, "noCityPopulation", 600000000L);
+        setPrivateField(testPopulation, "cityPercentage", 40.0);
+        setPrivateField(testPopulation, "noCityPercentage", 60.0);
+        populations.add(testPopulation);
+
+        // This test verifies the method handles IO exceptions gracefully
+        assertDoesNotThrow(() -> population.outputPopulation(populations, "/invalid/path/test.md"));
+    }
+
+    // Test outputSinglePopulation method thoroughly
+    @Test
+    void testOutputSinglePopulationWithNullList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> population.outputSinglePopulation(null, "test.md"));
+    }
+
+    @Test
+    void testOutputSinglePopulationWithEmptyList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> population.outputSinglePopulation(new ArrayList<>(), "test.md"));
+    }
+
+    @Test
+    void testOutputSinglePopulationSuccess() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population pop1 = new Population();
+        setPrivateField(pop1, "Name", "Germany");
+        setPrivateField(pop1, "totalPopulation", 83000000L);
+        populations.add(pop1);
+
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> population.outputSinglePopulation(populations, "single-success-test.md"));
+    }
+
+    @Test
+    void testOutputSinglePopulationIOException() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population testPopulation = new Population();
+        setPrivateField(testPopulation, "Name", "Test Country");
+        setPrivateField(testPopulation, "totalPopulation", 50000000L);
+        populations.add(testPopulation);
+
+        // This test verifies the method handles IO exceptions gracefully
+        assertDoesNotThrow(() -> population.outputSinglePopulation(populations, "/invalid/path/test.md"));
+    }
+
+    // Test print methods with edge cases
+    @Test
+    void testPrintPopulationWithZeroValues() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population zeroPopulation = new Population();
+        setPrivateField(zeroPopulation, "Name", "Zero Population");
+        setPrivateField(zeroPopulation, "totalPopulation", 0L);
+        setPrivateField(zeroPopulation, "cityPopulation", 0L);
+        setPrivateField(zeroPopulation, "noCityPopulation", 0L);
+        setPrivateField(zeroPopulation, "cityPercentage", 0.0);
+        setPrivateField(zeroPopulation, "noCityPercentage", 0.0);
+        populations.add(zeroPopulation);
+
+        // ACT & ASSERT - Should handle zero values without exceptions
+        assertDoesNotThrow(() -> population.printPopulation(populations));
+    }
+
+    @Test
+    void testPrintSinglePopulationWithZeroPopulation() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population zeroPopulation = new Population();
+        setPrivateField(zeroPopulation, "Name", "Zero Population");
+        setPrivateField(zeroPopulation, "totalPopulation", 0L);
+        populations.add(zeroPopulation);
+
+        // ACT & ASSERT - Should handle zero population without exceptions
+        assertDoesNotThrow(() -> population.printSinglePopulation(populations));
+    }
+
+    @Test
+    void testPrintPopulationWithVeryLongNames() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population longNamePopulation = new Population();
+        setPrivateField(longNamePopulation, "Name", "ThisIsAVeryLongContinentNameThatExceedsNormalLength");
+        setPrivateField(longNamePopulation, "totalPopulation", 1234567890L);
+        setPrivateField(longNamePopulation, "cityPopulation", 500000000L);
+        setPrivateField(longNamePopulation, "noCityPopulation", 734567890L);
+        setPrivateField(longNamePopulation, "cityPercentage", 40.5);
+        setPrivateField(longNamePopulation, "noCityPercentage", 59.5);
+        populations.add(longNamePopulation);
+
+        // ACT & ASSERT - Should handle long names without exceptions
+        assertDoesNotThrow(() -> population.printPopulation(populations));
+    }
+
+    // Test SQLException for all single population methods
+    @Test
+    void testPopulationRegionSQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<Population> populations = population.populationRegion("Western Europe");
+
+        assertNotNull(populations);
+        assertTrue(populations.isEmpty());
+    }
+
+    @Test
+    void testPopulationCountrySQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<Population> populations = population.populationCountry("Germany");
+
+        assertNotNull(populations);
+        assertTrue(populations.isEmpty());
+    }
+
+    @Test
+    void testPopulationDistrictSQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<Population> populations = population.populationDistrict("California");
+
+        assertNotNull(populations);
+        assertTrue(populations.isEmpty());
+    }
+
+    @Test
+    void testPopulationCitySQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        ArrayList<Population> populations = population.populationCity("London");
+
+        assertNotNull(populations);
+        assertTrue(populations.isEmpty());
+    }
+
+    // Test with empty string parameters
+    @Test
+    void testPopulationContinentWithEmptyString() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Population> populations = population.populationContinent("");
+
+        // ASSERT
+        assertNotNull(populations);
+        assertTrue(populations.isEmpty());
+        verify(mockPreparedStatement).setString(1, "");
+    }
+
+    @Test
+    void testPopulationRegionWithEmptyString() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Population> populations = population.populationRegion("");
+
+        // ASSERT
+        assertNotNull(populations);
+        assertTrue(populations.isEmpty());
+        verify(mockPreparedStatement).setString(1, "");
+    }
+
+    // Test with null parameters
+    @Test
+    void testPopulationContinentWithNull() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Population> populations = population.populationContinent(null);
+
+        // ASSERT
+        assertNotNull(populations);
+        assertTrue(populations.isEmpty());
+        verify(mockPreparedStatement).setString(1, null);
+    }
+
+    @Test
+    void testPopulationRegionWithNull() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // ACT
+        ArrayList<Population> populations = population.populationRegion(null);
+
+        // ASSERT
+        assertNotNull(populations);
+        assertTrue(populations.isEmpty());
+        verify(mockPreparedStatement).setString(1, null);
+    }
+
+    // Test population calculations consistency
+    @Test
+    void testPopulationCalculationsConsistency() throws SQLException {
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getString("Name")).thenReturn("Test Continent");
+        when(mockResultSet.getLong("Total_Population")).thenReturn(1000000000L);
+        when(mockResultSet.getLong("City_Population")).thenReturn(400000000L);
+        when(mockResultSet.getLong("No_City_Population")).thenReturn(600000000L);
+        when(mockResultSet.getDouble("City_Percentage")).thenReturn(40.0);
+        when(mockResultSet.getDouble("No_City_Percentage")).thenReturn(60.0);
+
+        ArrayList<Population> populations = population.continentPopulation();
+
+        Population testPop = populations.get(0);
+        Long totalPop = (Long) getPrivateField(testPop, "totalPopulation");
+        Long cityPop = (Long) getPrivateField(testPop, "cityPopulation");
+        Long noCityPop = (Long) getPrivateField(testPop, "noCityPopulation");
+        Double cityPct = (Double) getPrivateField(testPop, "cityPercentage");
+        Double noCityPct = (Double) getPrivateField(testPop, "noCityPercentage");
+
+        // Verify calculations are consistent
+        assertNotNull(totalPop);
+        assertNotNull(cityPop);
+        assertNotNull(noCityPop);
+        assertNotNull(cityPct);
+        assertNotNull(noCityPct);
+        assertEquals(totalPop, cityPop + noCityPop);
+        assertEquals(100.0, cityPct + noCityPct, 0.1); // Allow small rounding differences
+    }
+
+    // Test output methods with special characters
+    @Test
+    void testOutputPopulationWithSpecialCharacters() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population specialPopulation = new Population();
+        setPrivateField(specialPopulation, "Name", "Region & Name/With-Special|Chars");
+        setPrivateField(specialPopulation, "totalPopulation", 100000000L);
+        setPrivateField(specialPopulation, "cityPopulation", 40000000L);
+        setPrivateField(specialPopulation, "noCityPopulation", 60000000L);
+        setPrivateField(specialPopulation, "cityPercentage", 40.0);
+        setPrivateField(specialPopulation, "noCityPercentage", 60.0);
+        populations.add(specialPopulation);
+
+        // ACT & ASSERT - Should handle special characters without exceptions
+        assertDoesNotThrow(() -> population.outputPopulation(populations, "special-chars.md"));
+    }
+
+    @Test
+    void testOutputSinglePopulationWithSpecialCharacters() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population specialPopulation = new Population();
+        setPrivateField(specialPopulation, "Name", "Country & Name/With-Special|Chars");
+        setPrivateField(specialPopulation, "totalPopulation", 50000000L);
+        populations.add(specialPopulation);
+
+        // ACT & ASSERT - Should handle special characters without exceptions
+        assertDoesNotThrow(() -> population.outputSinglePopulation(populations, "special-chars-single.md"));
+    }
+
+    // Test printSinglePopulation with very long population numbers
+    @Test
+    void testPrintSinglePopulationWithLongNumbers() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+        Population largePopulation = new Population();
+        setPrivateField(largePopulation, "Name", "World");
+        setPrivateField(largePopulation, "totalPopulation", 7800000000L);
+        populations.add(largePopulation);
+
+        // ACT & ASSERT - Should handle large numbers without exceptions
+        assertDoesNotThrow(() -> population.printSinglePopulation(populations));
+    }
+
+    // Test outputPopulation with multiple populations
+    @Test
+    void testOutputPopulationWithMultiplePopulations() {
+        // ARRANGE
+        ArrayList<Population> populations = new ArrayList<>();
+
+        Population pop1 = new Population();
+        setPrivateField(pop1, "Name", "Asia");
+        setPrivateField(pop1, "totalPopulation", 4500000000L);
+        setPrivateField(pop1, "cityPopulation", 1800000000L);
+        setPrivateField(pop1, "noCityPopulation", 2700000000L);
+        setPrivateField(pop1, "cityPercentage", 40.0);
+        setPrivateField(pop1, "noCityPercentage", 60.0);
+        populations.add(pop1);
+
+        Population pop2 = new Population();
+        setPrivateField(pop2, "Name", "Europe");
+        setPrivateField(pop2, "totalPopulation", 750000000L);
+        setPrivateField(pop2, "cityPopulation", 500000000L);
+        setPrivateField(pop2, "noCityPopulation", 250000000L);
+        setPrivateField(pop2, "cityPercentage", 66.7);
+        setPrivateField(pop2, "noCityPercentage", 33.3);
+        populations.add(pop2);
+
+        // ACT & ASSERT - Should handle multiple populations without exceptions
+        assertDoesNotThrow(() -> population.outputPopulation(populations, "multiple-populations.md"));
     }
 
     // Helper method to get private field values using reflection

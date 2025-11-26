@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Complete Unit Tests for the Capital class using Mockito.
- * Aims for 100% code coverage by testing all public methods, branches, and error scenarios.
+ * Complete Unit Tests for the Capital class
+ *
  */
 @ExtendWith(MockitoExtension.class)
 public class CapitalTest {

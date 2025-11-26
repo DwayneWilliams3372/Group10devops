@@ -1,7 +1,6 @@
 package com.napier.sem;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,10 +44,8 @@ public class CapitalTest {
         capital = new Capital(mockConnection);
     }
 
-    /**
-     * Tests that the getCapitals method successfully returns a list of capital objects
-     * when the database call is successful and returns multiple results.
-     */
+    // ===== EXISTING TESTS (keep these) =====
+
     @Test
     void testGetAllCapitals() throws SQLException {
         // ARRANGE: Set up the mock flow
@@ -80,10 +77,6 @@ public class CapitalTest {
         verify(mockStatement, times(1)).executeQuery();
     }
 
-    /**
-     * Tests that the method handles a database failure (SQLException)
-     * by catching the error and returning an empty list.
-     */
     @Test
     void testQueryFails() throws SQLException {
         // ARRANGE: Mock the connection to throw an exception immediately
@@ -97,10 +90,6 @@ public class CapitalTest {
         assertTrue(capitals.isEmpty());
     }
 
-    /**
-     * Tests that the getCapitalsContinent method correctly sets the
-     * continent String parameter on the PreparedStatement and returns results.
-     */
     @Test
     void testContinentQuery() throws SQLException {
         // ARRANGE
@@ -124,10 +113,6 @@ public class CapitalTest {
         verify(mockStatement, times(1)).executeQuery();
     }
 
-    /**
-     * Tests that the getCapitalsRegion method correctly sets the
-     * region String parameter on the PreparedStatement.
-     */
     @Test
     void testRegionQuery() throws SQLException {
         // ARRANGE
@@ -145,10 +130,6 @@ public class CapitalTest {
         verify(mockStatement, times(1)).executeQuery();
     }
 
-    /**
-     * Tests that the getCapitalsPopulation method correctly sets the
-     * int parameter on the PreparedStatement and returns results.
-     */
     @Test
     void testPopulationQuery() throws SQLException {
         // ARRANGE
@@ -171,10 +152,6 @@ public class CapitalTest {
         verify(mockStatement, times(1)).executeQuery();
     }
 
-    /**
-     * Tests that the topCapitalsContinent method correctly sets the
-     * string and int parameters on the PreparedStatement.
-     */
     @Test
     void testTopCapitalsContinent() throws SQLException {
         // ARRANGE
@@ -194,10 +171,6 @@ public class CapitalTest {
         verify(mockStatement, times(1)).executeQuery();
     }
 
-    /**
-     * Tests that the topCapitalsRegion method correctly sets the
-     * string and int parameters on the PreparedStatement and returns results.
-     */
     @Test
     void testTopCapitalsRegion() throws SQLException {
         // ARRANGE
@@ -222,9 +195,6 @@ public class CapitalTest {
         verify(mockStatement, times(1)).executeQuery();
     }
 
-    /**
-     * Tests that printCapitals handles an empty list correctly.
-     */
     @Test
     void testPrintCapitalsEmpty() {
         // ARRANGE
@@ -244,9 +214,6 @@ public class CapitalTest {
         }
     }
 
-    /**
-     * Tests that printCapitals prints a non-empty list correctly.
-     */
     @Test
     void testPrintCapitalsWithData() {
         // ARRANGE
@@ -271,5 +238,160 @@ public class CapitalTest {
         } finally {
             System.setOut(originalOut);
         }
+    }
+
+    // ===== NEW TESTS TO ADD =====
+
+    @Test
+    void testExecuteQueryNoParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Capital> result = capital.getCapitals(); // Uses executeQuery() with no params
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteQueryWithStringParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Capital> result = capital.getCapitalsContinent("Europe");
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteQueryWithIntParamWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Capital> result = capital.getCapitalsPopulation(5);
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testExecuteQueryWithTwoParamsWithSQLException() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+
+        // ACT
+        ArrayList<Capital> result = capital.topCapitalsContinent("Asia", 3);
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    // Test extractCapital indirectly through public methods
+    @Test
+    void testExtractCapitalWithNullValues() throws SQLException {
+        // ARRANGE
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockStatement);
+        when(mockStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true).thenReturn(false);
+        when(mockResultSet.getString("NAME")).thenReturn(null);
+        when(mockResultSet.getString("COUNTRY")).thenReturn(null);
+        when(mockResultSet.getInt("POPULATION")).thenReturn(0);
+
+        // ACT
+        ArrayList<Capital> capitals = capital.getCapitals();
+
+        // ASSERT
+        assertNotNull(capitals);
+        assertEquals(1, capitals.size());
+        assertNull(capitals.get(0).name);
+        assertNull(capitals.get(0).country);
+        assertEquals(0, capitals.get(0).population);
+    }
+
+    @Test
+    void testOutputCapitalsWithNullList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> capital.outputCapitals(null, "test.md"));
+    }
+
+    @Test
+    void testOutputCapitalsWithEmptyList() {
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> capital.outputCapitals(new ArrayList<>(), "test.md"));
+    }
+
+    @Test
+    void testOutputCapitalsWithNullCapitalInList() {
+        // ARRANGE
+        ArrayList<Capital> capitals = new ArrayList<>();
+        capitals.add(null);
+        Capital validCapital = new Capital();
+        validCapital.name = "Berlin";
+        validCapital.country = "Germany";
+        validCapital.population = 3644826;
+        capitals.add(validCapital);
+
+        // ACT & ASSERT - Should handle null gracefully
+        assertDoesNotThrow(() -> capital.outputCapitals(capitals, "test-null.md"));
+    }
+
+    @Test
+    void testOutputCapitalsIOException() {
+        // ARRANGE
+        ArrayList<Capital> capitals = new ArrayList<>();
+        Capital capital = new Capital();
+        capital.name = "Test";
+        capital.country = "TestCountry";
+        capital.population = 1000000;
+        capitals.add(capital);
+
+        // This test verifies the method handles IO exceptions gracefully
+        assertDoesNotThrow(() -> capital.outputCapitals(capitals, "/invalid/path/test.md"));
+    }
+
+    @Test
+    void testPrintCapitalsWithNull() {
+        // ACT & ASSERT - Should handle null input gracefully
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outputStream));
+
+        try {
+            capital.printCapitals(null);
+            String output = outputStream.toString();
+            assertTrue(output.contains("No countries found"));
+        } finally {
+            System.setOut(originalOut);
+        }
+    }
+
+    // Test the default constructor
+    @Test
+    void testDefaultConstructor() {
+        Capital capitalWithDefaultConstructor = new Capital();
+        assertNotNull(capitalWithDefaultConstructor);
+    }
+
+    // Test outputCapitals with valid data (success case)
+    @Test
+    void testOutputCapitalsSuccess() {
+        // ARRANGE
+        ArrayList<Capital> capitals = new ArrayList<>();
+        Capital cap = new Capital();
+        cap.name = "Madrid";
+        cap.country = "Spain";
+        cap.population = 3223334;
+        capitals.add(cap);
+
+        // ACT & ASSERT - Should not throw exception
+        assertDoesNotThrow(() -> capital.outputCapitals(capitals, "success-test.md"));
     }
 }

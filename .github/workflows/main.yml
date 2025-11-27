@@ -114,7 +114,6 @@ jobs:
   BuildAndDocker:
     name: Build & Docker
     runs-on: ubuntu-22.04
-    needs: [UnitTests, IntegrationTests]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
